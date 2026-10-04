@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stiff or Wiggly</title>
+<meta name="description" content="Why can a perfect fit predict badly? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="Stiff or Wiggly">
+<meta property="og:description" content="Why can a perfect fit predict badly? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+.mk{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--s1);border:1.75px solid var(--s1);margin-right:7px}
+.mk.h{background:none;border-color:var(--s2)}
+.bar{height:10px;border-radius:5px;background:var(--grid)}
+.bar i{display:block;height:100%;min-width:10px;border-radius:5px;background:var(--s1)}
+.bar.h i{background:var(--surface);border:1.75px solid var(--s2)}
+.minis.one{grid-template-columns:minmax(0,1fr)}
+.knobs .btns{align-self:end}
+.btn svg{fill:currentColor}
+@media (min-width:700px){.reads{grid-template-columns:1fr 1fr 1.5fr}.knobs{grid-template-columns:1fr 1fr auto}}
+.read.nb{align-content:space-between}
+#u text{font-size:12px;fill:var(--muted)}
+#u .m{text-anchor:middle}
+#u .on{fill:var(--ink);font-weight:600}
+#u .w{fill:var(--ink2)}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">B1 · ML fundamentals</p><h1>Stiff or Wiggly</h1><p class="sub">Why can a perfect fit predict badly?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag sideways to bend the curve.</p></div>
+<div class="stage" id="stage" tabindex="0" role="slider" aria-label="Flexibility, polynomial degree" aria-valuemin="1" aria-valuemax="12"></div>
+<div class="reads">
+<div class="read nb"><div class="big" id="r-tr"></div><div class="cap"><i class="mk"></i>train error</div><div class="bar"><i id="b-tr"></i></div></div>
+<div class="read nb"><div class="big" id="r-te"></div><div class="cap"><i class="mk h"></i>test error</div><div class="bar h"><i id="b-te"></i></div></div>
+<div class="read minis one"><figure><svg id="u" viewBox="0 0 320 104" role="img"></svg><figcaption>Error by degree</figcaption></figure></div>
+</div>
+<div class="knobs">
+<label class="knob" for="k-n"><span>Training points</span><output id="o-n"></output><input type="range" id="k-n" min="10" max="80" step="1" value="20"></label>
+<label class="knob" for="k-l"><span>Smoothing</span><output id="o-l"></output><input type="range" id="k-l" min="0" max="20" step="1" value="0"></label>
+<div class="btns"><button class="btn" id="b-new" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="11" r="2"/><circle cx="8" cy="4.5" r="2"/><circle cx="12.5" cy="9.5" r="2"/></svg>New data</button></div>
+</div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">One dot, one example. The words and formulas are in topic note B1.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#b1-bias-variance" style="color:inherit">The bias-variance trade-off</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: Why can a perfect fit predict badly?
+(() => {
+  const { dot, t, ln, pth, curve, rng, randn, v, g } = P;
+  const r = rng(21), F = x => 240 - 150 * Math.sin(Math.PI * (x - 50) / 500);
+  const tr = Array.from({ length: 11 }, (_, i) => { const x = 60 + i * 48; return [x, F(x) + 40 * randn(r)]; });
+  const te = Array.from({ length: 8 }, (_, i) => { const x = 84 + i * 62; return [x, F(x) + 10 * randn(r)]; });
+  const train = tr.map(p => dot(p[0], p[1], 7, 's1')).join(''), test = te.map(p => dot(p[0], p[1], 7, 's2', 0)).join('');
+  const truth = d => pth(curve(F, 50, 550), d ? 'ghost' : 'ink', d ? 2 : 3, '', d ? '6 6' : '');
+  const mx = tr.reduce((a, p) => a + p[0], 0) / 11, my = tr.reduce((a, p) => a + p[1], 0) / 11, b = tr.reduce((a, p) => a + (p[0] - mx) * (p[1] - my), 0) / tr.reduce((a, p) => a + (p[0] - mx) ** 2, 0);
+  // a curve forced through every training dot
+  let w = 'M' + tr[0][0] + ' ' + tr[0][1].toFixed(1);
+  for (let i = 0; i < 10; i++) { const p0 = tr[Math.max(0, i - 1)], p1 = tr[i], p2 = tr[i + 1], p3 = tr[Math.min(10, i + 2)], k = 1.5 / 6; w += `C${(p1[0] + (p2[0] - p0[0]) * k).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) * k * 2.6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) * k).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) * k * 2.6).toFixed(1)} ${p2[0]} ${p2[1].toFixed(1)}`; }
+  STORY([
+    ['Dots follow a hidden pattern, plus some noise.', g(1, truth(1)) + train],
+    ['Too stiff. A straight line misses the bend.', train + g(1, ln(50, my + b * (50 - mx), 550, my + b * (550 - mx), 'ink', 3))],
+    ['Too wiggly. It hits every dot, noise included.', g(1, pth(w, 'ink', 3)) + train],
+    ['New dots arrive. The wiggly line misses them.', pth(w, 'ink', 3) + train + g(1, test) + dot(70, 296, 6, 's2', 0) + t(84, 302, 'new dots', 18, 'start', 1)],
+    ['Just right. It follows the pattern, not the noise.', g(1, truth(0)) + train + test]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, rng, randn, reduced, width, drag, missions, onResize, knob } = KIT;
+  // Same maths as the v1 explainer: noisy points from sin(2 pi x), noise 0.3, ridge fit on a Chebyshev basis.
+  const SG = 0.3, NT = 40, NP = 80, MD = 12, NF = 12, CAP = 0.6;
+  const S = { d: 1, n: 20, k: 0, seed: 100 }, G = {}, stage = $('stage');
+  const check = missions(['Find the lowest test error', 'Overfit it', 'Tame degree 10']);
+  const truth = x => Math.sin(2 * Math.PI * x);
+  const feats = x => { const u = 2 * x - 1, f = [1, u]; for (let k = 2; k <= MD; k++) f.push(2 * u * f[k - 1] - f[k - 2]); return f; };
+  function solve(A, b) {
+    const m = b.length;
+    for (let i = 0; i < m; i++) {
+      let p = i;
+      for (let r = i + 1; r < m; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+      [A[i], A[p]] = [A[p], A[i]]; [b[i], b[p]] = [b[p], b[i]];
+      for (let r = i + 1; r < m; r++) { const f = A[r][i] / A[i][i]; for (let c = i; c < m; c++) A[r][c] -= f * A[i][c]; b[r] -= f * b[i]; }
+    }
+    const w = new Array(m).fill(0);
+    for (let i = m - 1; i >= 0; i--) { let s = b[i]; for (let c = i + 1; c < m; c++) s -= A[i][c] * w[c]; w[i] = s / A[i][i]; }
+    return w;
+  }
+  // least squares on the first n points of P, degree D, ridge strength l (intercept not penalised)
+  function fit(P, n, D, l) {
+    const m = D + 1, A = Array.from({ length: m }, () => new Array(m).fill(0)), b = new Array(m).fill(0);
+    for (let i = 0; i < n; i++) { const f = P[i].f, y = P[i].y; for (let r = 0; r < m; r++) { b[r] += f[r] * y; for (let c = 0; c < m; c++) A[r][c] += f[r] * f[c]; } }
+    for (let r = 0; r < m; r++) A[r][r] += 1e-9 + (r ? l * n : 0);
+    return solve(A, b);
+  }
+  const pred = (w, f) => { let s = 0; for (let i = 0; i < w.length; i++) s += w[i] * f[i]; return s; };
+  const mse = (w, P, n) => { let s = 0; for (let i = 0; i < n; i++) { const e = pred(w, P[i].f) - P[i].y; s += e * e; } return s < 1e9 ? s / n : 1e9; };
+  const f2 = v => v < 99.5 ? v.toFixed(v < 9.995 ? 2 : 1) : '99+';
+  let DATA, cur, raf = 0, held = false, els;
+  function gen() {
+    const pts = (r, n, even) => { const o = []; for (let i = 0; i < n; i++) { const x = even ? (i + r()) / n : r(); o.push({ x, y: truth(x) + SG * randn(r), f: feats(x) }); } return o; };
+    const r = rng(S.seed * 131 + 7);
+    DATA = { tr: pts(r, NP), te: pts(r, NT, 1), fan: Array.from({ length: NF }, (_, j) => pts(rng(S.seed * 977 + j * 53 + 11), NP)) };
+  }
+  const Y = v => G.T + (1.8 - v) / 3.6 * (G.B - G.T), X = x => G.L + x * (G.R - G.L);
+  const line = ys => { let s = ''; for (let i = 0; i < ys.length; i++) s += (i ? 'L' : 'M') + G.px[i] + ' ' + Y(ys[i]).toFixed(1); return s; };
+  const show = () => { els[0].setAttribute('d', cur.slice(1).map(line).join('')); els[1].setAttribute('d', line(cur[0])); };
+  function geo() {
+    const W = width(stage), big = W >= 640;
+    if (W === G.W) return;
+    Object.assign(G, big ? { W, big, H: 476, L: 24, T: 44, B: 364, yS: 424, r: 5 } : { W, big, H: 448, L: 14, T: 56, B: 338, yS: 394, r: 4 });
+    G.R = W - G.L; G.xL = G.L + 20; G.xR = G.R - 20; G.px = []; G.gf = [];
+    const m = Math.ceil((G.R - G.L) / 3), t = [];
+    for (let i = 0; i <= m; i++) { G.px.push((G.L + i / m * (G.R - G.L)).toFixed(1)); G.gf.push(feats(i / m)); t.push(truth(i / m)); }
+    G.tru = line(t); cur = null;
+  }
+  const LG = [
+    ['<circle cx="5" r="5" fill="var(--s1)"/>', 10, 'train'],
+    ['<circle cx="5" r="4" fill="none" stroke="var(--s2)" stroke-width="1.75"/>', 10, 'test'],
+    ['<path d="M0 0H20" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="5 4"/>', 20, 'truth'],
+    ['<path d="M0 0H20" stroke="var(--ink)" stroke-width="2"/>', 20, 'fit'],
+    ['<path d="M0 0L20 -5M0 0H20M0 0L20 5" stroke="var(--s1)" opacity=".5"/>', 20, 'other samples']
+  ].map(g => `<g class="lg">${g[0]}<text class="word" x="${g[1] + 6}" y="4">${g[2]}</text></g>`).join('');
+  function render(anim) {
+    geo();
+    const { W, H, L, R, T, B, yS, xL, xR, big, r } = G, n = S.n, d = S.d, lam = S.k ? Math.pow(10, (S.k - 20) / 4) : 0;
+    const sweep = l => { const o = { tr: [], te: [], w: [] }; for (let k = 1; k <= MD; k++) { const w = fit(DATA.tr, n, k, l); o.w.push(w); o.tr.push(mse(w, DATA.tr, n)); o.te.push(mse(w, DATA.te, NT)); } return o; };
+    const C = sweep(lam), best = Math.min(...C.te), bd = C.te.indexOf(best) + 1, ref = lam ? Math.min(...sweep(0).te) : best, eTr = C.tr[d - 1], eTe = C.te[d - 1];
+    const ys = w => G.gf.map(f => { const v = pred(w, f); return v === v ? clamp(v, -2.7, 2.7) : 2.7; });
+    const to = [C.w[d - 1], ...DATA.fan.map(P => fit(P, n, d, lam))].map(ys);
+    const tx = k => xL + (k - 1) / 11 * (xR - xL), hx = tx(d), dot = (p, rr, a) => `<circle cx="${X(p.x).toFixed(1)}" cy="${Y(clamp(p.y, -1.8, 1.8)).toFixed(1)}" r="${rr}" ${a}/>`;
+    let h = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Degree ${d} fit to ${n} training points. Train error ${f2(eTr)}, test error ${f2(eTe)}."><clipPath id="cp"><rect y="${T - 6}" width="${W}" height="${B - T + 12}"/></clipPath>${LG}` +
+      `<g clip-path="url(#cp)" fill="none"><path d="M${L} ${Y(0)}H${R}" stroke="var(--grid)"/><path id="pn" stroke="var(--s1)" opacity=".4"/><path d="${G.tru}" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="6 5"/>` +
+      DATA.te.map(p => dot(p, big ? 3.6 : 3, 'fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"')).join('') +
+      '<path id="pf" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>' +
+      DATA.tr.slice(0, n).map(p => dot(p, r, 'fill="var(--s1)" stroke="var(--surface)" stroke-width="1.5"')).join('') +
+      `</g><path d="M0 ${B + 14}H${W}" stroke="var(--grid)"/><path d="M${xL} ${yS}H${xR}" stroke="var(--ghost)"/>`;
+    for (let k = 1; k <= MD; k++) h += `<circle class="tk" cx="${tx(k).toFixed(1)}" cy="${yS}" r="3" fill="${!big && Math.abs(k - d) === 1 ? 'none' : 'var(--ghost)'}"/>`;
+    h += `<g fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round"><path d="M${L} ${yS + 37}l22 -9"/><path d="M${R - 22} ${yS + 32}q2.75 -10 5.5 0t5.5 0t5.5 0t5.5 0"/></g>` +
+      `<text x="${L + 30}" y="${yS + 37}"><tspan class="word" style="font-size:13px">stiff</tspan><tspan class="cap" dx="8">bias</tspan></text>` +
+      `<text x="${R - 30}" y="${yS + 37}" text-anchor="end"><tspan class="cap">variance</tspan><tspan class="word" dx="8" style="font-size:13px">wiggly</tspan></text>` +
+      `<text class="cap" x="${hx}" y="${yS - 24}" text-anchor="middle">degree</text><circle cx="${hx}" cy="${yS}" r="15" fill="var(--ink)" stroke="var(--surface)" stroke-width="3"/>` +
+      `<text x="${hx}" y="${yS + 5}" text-anchor="middle" style="font-size:14px;font-weight:600;fill:var(--surface)">${d}</text>` +
+      `<path d="${d > 1 ? `M${hx - 21} ${yS - 5}l-5 5l5 5` : ''}${d < MD ? `M${hx + 21} ${yS - 5}l5 5l-5 5` : ''}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    stage.innerHTML = h;
+    stage.setAttribute('aria-valuenow', d);
+    let lx = L, ly = big ? 24 : 22;
+    stage.querySelectorAll('.lg').forEach((g, i) => { if (!big && i === 3) { lx = L; ly += 20; } g.setAttribute('transform', `translate(${lx} ${ly})`); lx += g.getBBox().width + 18; });
+    els = [$('pn'), $('pf')];
+    cancelAnimationFrame(raf);
+    if (anim && cur && !reduced()) {
+      const from = cur, t0 = performance.now();
+      const step = now => { const t = clamp((now - t0) / 200, 0, 1), e = t * (2 - t); cur = to.map((a, i) => a.map((v, j) => from[i][j] + (v - from[i][j]) * e)); show(); if (t < 1) raf = requestAnimationFrame(step); };
+      show(); raf = requestAnimationFrame(step);
+    } else { cur = to; show(); }
+    // readouts
+    $('r-tr').textContent = f2(eTr); $('r-te').textContent = f2(eTe);
+    $('b-tr').style.width = clamp(eTr / CAP, 0, 1) * 100 + '%'; $('b-te').style.width = clamp(eTe / CAP, 0, 1) * 100 + '%';
+    $('o-n').textContent = n; $('o-l').textContent = lam ? 'λ ' + Number(lam.toPrecision(1)) : 'off';
+    // error against degree on the same linear scale as the bars; a line that leaves the top is off the chart
+    const u = $('u'), uw = Math.max(200, u.parentNode.clientWidth || 250), xr = uw - 64;
+    const ux = k => 8 + (k - 1) / 11 * (xr - 8), uy = v => 84 - clamp(v / CAP, 0, 3) * 76, ul = a => a.map((v, i) => (i ? 'L' : 'M') + ux(i + 1).toFixed(1) + ' ' + uy(v).toFixed(1)).join('');
+    let yA = clamp(uy(C.tr[MD - 1]), 9, 84), yB = clamp(uy(C.te[MD - 1]), 9, 84);
+    if (Math.abs(yA - yB) < 15) { const s = yA >= yB ? 7.5 : -7.5, m = clamp((yA + yB) / 2, 16.5, 76.5); yA = m + s; yB = m - s; }
+    const txt = (x, y, t, c) => `<text class="${c}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${t}</text>`;
+    u.setAttribute('viewBox', `0 0 ${uw} 104`);
+    u.innerHTML = `<path d="M8 84H${xr}" stroke="var(--grid)"/><path d="M${ux(d).toFixed(1)} 0V84" stroke="var(--ghost)"/><g fill="none" stroke-width="2" stroke-linejoin="round"><path d="${ul(C.tr)}" stroke="var(--s1)"/><path d="${ul(C.te)}" stroke="var(--s2)"/></g>` +
+      `<circle cx="${ux(d).toFixed(1)}" cy="${uy(eTr).toFixed(1)}" r="4.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="${ux(d).toFixed(1)}" cy="${Math.max(uy(eTe), 6).toFixed(1)}" r="4" fill="var(--surface)" stroke="var(--s2)" stroke-width="2"/>` +
+      `<circle cx="${xr + 13}" cy="${yA.toFixed(1)}" r="4" fill="var(--s1)"/><circle cx="${xr + 13}" cy="${yB.toFixed(1)}" r="3.4" fill="none" stroke="var(--s2)" stroke-width="1.75"/>` +
+      txt(xr + 22, yA + 4, 'train', 'w') + txt(xr + 22, yB + 4, 'test', 'w') + (d > 2 ? txt(ux(1), 100, 1, 'm') : '') + (d < MD - 1 ? txt(ux(MD), 100, MD, 'm') : '') + txt(ux(d), 100, d, 'm on');
+    u.setAttribute('aria-label', `Train and test error by degree. Lowest test error at degree ${bd}.`);
+    const how = S.k ? (n > 20 ? 'More data and smoothing' : 'Smoothing') : 'More data';
+    check(held ? [] : [d === bd, d >= 9 && !S.k && eTe >= 3 * eTr, d >= 10 && eTe <= 1.25 * ref], [
+      `Degree ${d}: lowest test error, ${f2(eTe)}. Stiffer underfits, wigglier overfits.`,
+      `It memorised the dots: train ${f2(eTr)}, test ${f2(eTe)}.`,
+      S.k || n > 20 ? `${how} calmed degree ${d}: test ${f2(eTe)}.${S.k && n > 20 ? '' : S.k ? ' More data works too.' : ' Smoothing works too.'}` : `This sample keeps degree ${d} calm: test ${f2(eTe)}.`
+    ]);
+  }
+  drag(stage, e => {
+    const d = clamp(Math.round(1 + (e.x - G.xL) / (G.xR - G.xL) * 11), 1, MD), up = e.type === 'up';
+    if (up || d !== S.d || !held) { held = !up; if (!up) S.d = d; render(1); }
+  });
+  stage.addEventListener('keydown', e => {
+    const k = e.key, s = (k === 'ArrowRight' || k === 'ArrowUp') - (k === 'ArrowLeft' || k === 'ArrowDown');
+    if (s) { e.preventDefault(); S.d = clamp(S.d + s, 1, MD); render(1); }
+  });
+  knob('k-n', v => { S.n = v; render(1); });
+  knob('k-l', v => { S.k = v; render(1); });
+  $('b-new').addEventListener('click', () => { S.seed++; gen(); render(1); });
+  onResize(() => render());
+  gen(); render();
+})();
+</script>
+</body>
+</html>

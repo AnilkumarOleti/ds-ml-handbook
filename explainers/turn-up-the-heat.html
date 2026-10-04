@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Turn Up the Heat</title>
+<meta name="description" content="Why does a chatbot answer differently each time? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="Turn Up the Heat">
+<meta property="og:description" content="Why does a chatbot answer differently each time? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+.strip i.a{--c:var(--s1)}
+.strip i.s{--c:var(--s2);border-radius:2px}
+.strip i.m{--c:var(--s3);border-radius:0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.strip i.e{--c:var(--ghost);background:none}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">B7 · Transformers and LLMs</p><h1>Turn Up the Heat</h1><p class="sub">Why does a chatbot answer differently each time?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag the heat. Then draw words.</p></div>
+<div class="stage" id="stage" tabindex="0" role="slider" aria-label="Temperature" aria-valuemin="0.1" aria-valuemax="3"></div>
+<div class="reads">
+<div class="read"><div class="big" id="r-top"></div><div class="cap">top word wins</div><div class="strip" id="s-top"></div></div>
+<div class="read"><div class="big" id="r-low"></div><div class="cap">long shot</div><div class="strip" id="s-low"></div></div>
+<div class="read"><div class="big" id="r-sur"></div><div class="cap">were surprises</div><div class="strip" id="s-sur"></div></div>
+</div>
+<div class="btns"><button class="btn go" id="b1" type="button">Draw 1</button><button class="btn" id="b20" type="button">Draw 20</button></div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">One chip, one draw. The words and formulas are in topic note B7.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#b7-model-families-sampling" style="color:inherit">Encoders, decoders and sampling</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: Why does a chatbot answer differently each time?
+(() => {
+  const { t, ln, v, g } = P;
+  const W = ['mat', 'sofa', 'moon'], C = ['s1', 's2', 's3'], soft = T => { const e = [2, 1, 0].map(s => Math.exp(s / T)), z = e[0] + e[1] + e[2]; return e.map(x => x / z); };
+  const chips = ['The', 'cat', 'sat', 'on', 'the', '?'], cw = [64, 60, 58, 50, 60, 96];
+  let cx = 81;
+  const row = chips.map((w, i) => { const x = cx; cx += cw[i] + 10; return `<rect x="${x}" y="134" width="${cw[i]}" height="52" rx="12" fill="${v('surface')}" stroke="${v(i === 5 ? 's2' : 'ink2')}" stroke-width="2"${i === 5 ? ' stroke-dasharray="6 5"' : ''}/>` + t(x + cw[i] / 2, 168, w, 22, 'middle', 1); }).join('');
+  const bars = soft(1).map((p, i) => { const h = p * 270, x = 110 + i * 140; return g(i, `<rect x="${x}" y="${250 - h}" width="100" height="${h}" rx="6" fill="${v(C[i])}"/>` + t(x + 50, 240 - h, Math.round(p * 100) + '%', 26, 'middle', 1)) + t(x + 50, 282, W[i], 22, 'middle', 1); }).join('') + ln(90, 250, 510, 250, 'ink2', 2);
+  const wheel = (x, y, R, T, lab) => { const p = soft(T); let a = -Math.PI / 2, s = ''; p.forEach((q, i) => { const b = a + q * 2 * Math.PI, m = (a + b) / 2, big = q > 0.5 ? 1 : 0; s += `<path d="M${x} ${y}L${(x + R * Math.cos(a)).toFixed(1)} ${(y + R * Math.sin(a)).toFixed(1)}A${R} ${R} 0 ${big} 1 ${(x + R * Math.cos(b)).toFixed(1)} ${(y + R * Math.sin(b)).toFixed(1)}Z" fill="${v(C[i])}" stroke="${v('surface')}" stroke-width="2"/>`; if (lab) s += t((x + (R + 16) * Math.cos(m)).toFixed(1), (y + (R + 16) * Math.sin(m) + 7).toFixed(1), W[i], 20, Math.cos(m) > 0.2 ? 'start' : Math.cos(m) < -0.2 ? 'end' : 'middle', 1); a = b; }); return s + `<path d="M${x - 11} ${y - R - 18}h22l-11 20z" fill="${v('ink')}"/><circle cx="${x}" cy="${y}" r="7" fill="${v('surface')}" stroke="${v('ink')}" stroke-width="2"/>`; };
+  const tray = seq => seq.map((k, i) => g(i % 4, `<rect x="${352 + i % 4 * 56}" y="${92 + Math.floor(i / 4) * 40}" width="46" height="28" rx="14" fill="${v(C[k])}"/>`)).join('') + t(459, 238, '12 spins', 18, 'middle', 1);
+  STORY([
+    ['A chatbot writes one word at a time.', row],
+    ['For the next word, it scores every candidate.', bars],
+    ['Then it spins a wheel. Bigger slice, better odds.', wheel(300, 172, 112, 1, 1)],
+    ['Cold setting: the favourite wins almost every spin.', wheel(170, 172, 104, 0.5) + tray([0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]) + t(170, 308, 'cold', 20, 'middle', 1)],
+    ['Hot setting: long shots win often. More variety, more risk.', wheel(170, 172, 104, 2) + tray([0, 1, 0, 2, 1, 0, 0, 1, 2, 0, 1, 0]) + t(170, 308, 'hot', 20, 'middle', 1)]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, rng, pct, reduced, width, drag, missions, onResize } = KIT;
+  // Handbook example: three candidate tokens with scores 2, 1 and 0. Probabilities are softmax(score / T).
+  const WORDS = ['mat', 'sofa', 'moon'], PROMPT = ['The', 'cat', 'sat', 'on', 'the'], KEEP = 40, LAST = 20;
+  const stage = $('stage'), rnd = rng(2755), S = { t: 10, draws: [], last: -1 }, G = { a: 0, b: 1 };
+  const check = missions(['Make the favourite win 9 in 10', 'Give the long shot 1 in 5', 'Draw 20 identical words']);
+  const odds = T => { const e = [1, Math.exp(-1 / T), Math.exp(-2 / T)], z = e[0] + e[1] + e[2]; return e.map(v => v / z); };
+  const BASE = odds(1), f = v => v.toFixed(1), show = v => v > 0 && v < 0.005 ? '&lt;1%' : pct(v);
+  // one shape per word, so the three never depend on colour alone: circle, square, triangle
+  const mark = (i, x, y, r, more = '') => {
+    const c = `fill="var(--s${i + 1})"${more}/>`;
+    return i === 0 ? `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" ${c}`
+      : i === 1 ? `<rect x="${f(x - r * 0.88)}" y="${f(y - r * 0.88)}" width="${f(r * 1.76)}" height="${f(r * 1.76)}" rx="2" ${c}`
+        : `<path d="M${f(x)} ${f(y - r * 1.2)}l${f(r * 1.2)} ${f(r * 2.05)}h${f(-r * 2.4)}z" ${c}`;
+  };
+  function sample(n) {
+    const p = odds(S.t / 10);
+    for (let k = 0; k < n; k++) { const u = rnd(); S.draws.push(u < p[0] ? 0 : u < p[0] + p[1] ? 1 : 2); }
+    S.draws = S.draws.slice(-KEEP);
+  }
+  function render(fresh = 0) {
+    const W = width(stage), big = W >= 640, T = S.t / 10, p = odds(T), n = S.draws.length;
+    const L = big ? 40 : 14, R = W - L, y0 = big ? 22 : 14, ch = big ? 36 : 30, fs = big ? 18 : 15;
+    const R0 = Math.min(big ? 84 : 60, (R - L) / 6 + L - 10), ys = y0 + ch + (big ? 16 : 12) + 2 * R0;
+    const pf = big ? 30 : 24, wf = big ? 15 : 14, yp = ys + (big ? 36 : 30), yw = yp + (big ? 22 : 20);
+    const ty = yw + (big ? 80 : 72), hr = big ? 14 : 13, bx = L + (big ? 26 : 23), br = big ? 9 : 8;
+    const a = G.a = L + (big ? 60 : 52), b = G.b = R - (big ? 26 : 22), sx = v => a + (v - 0.1) / 2.9 * (b - a), xT = sx(T);
+    const cols = big ? 20 : 10, rows = KEEP / cols, rh = big ? 28 : 26, pad = big ? 12 : 8, pitch = (R - L - 2 * pad) / cols;
+    const cr = Math.min(big ? 10 : 9, pitch / 2 - 4), yt = ty + (big ? 42 : 40), th = rows * rh + (big ? 16 : 14), H = yt + th + (big ? 18 : 14);
+    const cx = [0, 1, 2].map(i => L + (R - L) * (2 * i + 1) / 6), rr = p.map(v => Math.max(1.2, R0 * Math.sqrt(v)));
+    let h = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Temperature ${f(T)}. ${WORDS.map((w, i) => w + ' ' + pct(p[i])).join(', ')}. ${n} words drawn.">`;
+    // the prompt, ending in the blank
+    const gap = big ? 6 : 4, cw = PROMPT.map(w => w.length * fs * 0.6 + (big ? 22 : 12)), bw = big ? 104 : 80;
+    let x = (W - cw.reduce((s, v) => s + v + gap, bw)) / 2;
+    const ymid = y0 + ch / 2, yb = ymid + fs * 0.35;
+    PROMPT.forEach((w, i) => {
+      h += `<rect x="${f(x)}" y="${y0}" width="${f(cw[i])}" height="${ch}" rx="8" fill="var(--page)"/><text class="num" x="${f(x + cw[i] / 2)}" y="${f(yb)}" text-anchor="middle" style="font-size:${fs}px;font-weight:500">${w}</text>`;
+      x += cw[i] + gap;
+    });
+    h += S.last < 0 ? `<rect x="${f(x)}" y="${y0 + 1}" width="${bw}" height="${ch - 2}" rx="8" fill="none" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="5 4"/>`
+      : `<rect x="${f(x)}" y="${y0 + 1}" width="${bw}" height="${ch - 2}" rx="8" fill="var(--surface)" stroke="var(--s${S.last + 1})" stroke-width="2"/>` + mark(S.last, x + (big ? 20 : 15), ymid, 6) + `<text class="num" x="${f(x + (big ? 34 : 27))}" y="${f(yb)}" style="font-size:${fs}px">${WORDS[S.last]}</text>`;
+    // three candidates: bubble area is the probability, the dashed ring is its size at T = 1
+    h += `<line x1="${L}" x2="${R}" y1="${ys}" y2="${ys}" stroke="var(--grid)"/>`;
+    WORDS.forEach((w, i) => {
+      const r1 = R0 * Math.sqrt(BASE[i]), ww = w.length * wf * 0.56;
+      h += `<circle cx="${f(cx[i])}" cy="${f(ys - rr[i])}" r="${f(rr[i])}" fill="var(--s${i + 1})"/><circle cx="${f(cx[i])}" cy="${f(ys - r1)}" r="${f(r1)}" fill="none" stroke="var(--ghost)" stroke-dasharray="3 4"/>` +
+        `<text class="num" x="${f(cx[i])}" y="${yp}" text-anchor="middle" style="font-size:${pf}px">${show(p[i])}</text>` + mark(i, cx[i] - ww / 2 - 5, yw - wf * 0.34, 5.5) + `<text class="word" x="${f(cx[i] + 7)}" y="${yw}" text-anchor="middle" style="font-size:${wf}px">${w}</text>`;
+    });
+    // thermometer: cold on the left, hot on the right
+    const snow = L + (big ? 7 : 6), fx = R - (big ? 8 : 7), lx = clamp(xT, L + 46, R - 46);
+    h += `<path d="M${snow - 7} ${ty}h14M${f(snow - 3.5)} ${f(ty - 6.1)}l7 12.2M${f(snow + 3.5)} ${f(ty - 6.1)}l-7 12.2" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>` +
+      `<path transform="translate(${fx} ${ty})" d="M0 8c-3.5 0-5.5-2.4-5.5-5.2c0-2.6 1.8-4 2.9-5.6c.6-.9.9-1.9.9-3.2c2.6 1.5 4.3 3.7 4.6 6.3c.6-.5 1-1.2 1.2-2c1 1.3 1.4 2.8 1.4 4.5c0 2.8-2 5.2-5.5 5.2z" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linejoin="round"/>` +
+      `<rect x="${bx}" y="${ty - 4}" width="${f(b - bx + 4)}" height="8" rx="4" fill="var(--grid)"/><rect x="${bx}" y="${ty - 4}" width="${f(xT - bx)}" height="8" fill="var(--ink)"/><circle cx="${bx}" cy="${ty}" r="${br}" fill="var(--ink)"/>`;
+    for (let v = 0.5; v <= 3; v += 0.5) h += `<line x1="${f(sx(v))}" x2="${f(sx(v))}" y1="${ty + 10}" y2="${ty + 15}" stroke="var(--ghost)"/>`;
+    [0.1, 1, 2, 3].forEach(v => { h += `<text x="${f(sx(v))}" y="${ty + 30}" text-anchor="middle" style="font-size:11px">${v}</text>`; });
+    h += `<text class="cap" x="${f(lx)}" y="${ty - (big ? 54 : 49)}" text-anchor="middle">temperature</text><text class="num" x="${f(lx)}" y="${ty - 24}" text-anchor="middle" style="font-size:${big ? 28 : 24}px">${f(T)}</text>` +
+      `<circle cx="${f(xT)}" cy="${ty}" r="${hr}" fill="var(--ink)" stroke="var(--surface)" stroke-width="3"/><path d="M${f(xT - 3.5)} ${ty - 4.5}l-4.5 4.5l4.5 4.5M${f(xT + 3.5)} ${ty - 4.5}l4.5 4.5l-4.5 4.5" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // tray: the last 40 draws, oldest first. Anything older than the last 20 fades.
+    h += `<rect x="${L}" y="${yt}" width="${R - L}" height="${th}" rx="12" fill="var(--page)"/>`;
+    const fly = [];
+    for (let k = 0; k < KEEP; k++) {
+      const px = L + pad + pitch * (k % cols + 0.5), py = yt + (th - rows * rh) / 2 + rh * (Math.floor(k / cols) + 0.5), w = S.draws[k];
+      if (k >= n) { h += `<circle cx="${f(px)}" cy="${f(py)}" r="2" fill="var(--ghost)"/>`; continue; }
+      const isNew = k >= n - fresh;
+      if (isNew) fly.push([cx[w] - px, ys - rr[w] - py]);
+      h += mark(w, px, py, cr, isNew ? ' class="fly"' : k < n - LAST ? ' opacity=".35"' : '');
+    }
+    stage.innerHTML = h + '</svg>';
+    stage.setAttribute('aria-valuenow', f(T));
+    if (fresh && !reduced()) stage.querySelectorAll('.fly').forEach((el, j) => {
+      if (el.animate) el.animate([{ transform: `translate(${f(fly[j][0])}px,${f(fly[j][1])}px)`, opacity: 0 }, { opacity: 1, offset: 0.15 }, { transform: 'translate(0,0)', opacity: 1 }], { duration: 420, delay: j * 40, easing: 'cubic-bezier(.45,0,.8,.55)', fill: 'backwards' });
+    });
+    // readouts
+    const recent = S.draws.slice(-LAST), odd = recent.filter(w => w).length, dots = (k, c) => `<i class="${c}"></i>`.repeat(k);
+    const k0 = Math.round(p[0] * LAST), k2 = Math.round(p[2] * LAST);
+    $('r-top').textContent = pct(p[0]); $('s-top').innerHTML = dots(k0, 'a') + dots(LAST - k0, 'e');
+    $('r-low').innerHTML = show(p[2]); $('s-low').innerHTML = dots(k2, 'm') + dots(LAST - k2, 'e');
+    $('r-sur').innerHTML = `${odd}<small>of ${recent.length}</small>`; $('s-sur').innerHTML = recent.map(w => dots(1, 'asm'[w])).join('') + dots(LAST - recent.length, 'e');
+    const same = recent.length === LAST && recent.every(w => w === recent[0]);
+    check([p[0] >= 0.9, p[2] >= 0.2, same], [
+      `T = ${f(T)}: the favourite takes ${pct(p[0])}.`,
+      `T = ${f(T)}: even the odd word gets ${pct(p[2])}.`,
+      `"${WORDS[recent[0]]}" ${LAST} times. Cold models repeat, hot ones surprise.`
+    ]);
+  }
+  const setT = v => { S.t = clamp(Math.round(v), 1, 30); render(); };
+  const go = n => { sample(n); S.last = S.draws[S.draws.length - 1]; render(n); };
+  drag(stage, e => { if (e.type !== 'up') setT(1 + (e.x - G.a) / (G.b - G.a) * 29); });
+  stage.addEventListener('keydown', e => {
+    const d = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[e.key];
+    if (d) { e.preventDefault(); setT(S.t + d); }
+  });
+  $('b1').addEventListener('click', () => go(1));
+  $('b20').addEventListener('click', () => go(20));
+  onResize(() => render());
+  sample(LAST);
+  render();
+})();
+</script>
+</body>
+</html>

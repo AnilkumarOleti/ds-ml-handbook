@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Sneaky Average</title>
+<meta name="description" content="How can the total fall when nothing got worse? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="The Sneaky Average">
+<meta property="og:description" content="How can the total fall when nothing got worse? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+.d{fill:var(--surface);transition:transform .22s ease-out,fill .2s,stroke .2s}
+.d.a{stroke:var(--s1)}
+.d.b{stroke:var(--s2)}
+.d.a.s{fill:var(--s1)}
+.d.b.s{fill:var(--s2)}
+@media (prefers-reduced-motion:reduce){.d{transition:none}}
+#split svg{display:block;width:100%;height:auto}
+#split text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+#split .num{fill:var(--ink);font-weight:600}
+#split .word{fill:var(--ink2)}
+#k-m{accent-color:var(--s2)}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">C3 · Product metrics and cases</p><h1>The Sneaky Average</h1><p class="sub">How can the total fall when nothing got worse?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag the fence. Visitors switch pens, not habits.</p></div>
+<div class="stage" id="stage" tabindex="0" role="slider" aria-label="Fence position, desktop share of visitors" aria-valuemin="10" aria-valuemax="90"></div>
+<div class="reads">
+<div class="read"><div class="big" id="r-all"></div><div class="cap">of visitors bought<b>overall rate</b></div><div class="strip" id="s-all"></div></div>
+<div class="read"><div id="split"></div><div class="cap">what moved it<b>points</b></div></div>
+</div>
+<div class="knobs">
+<label class="knob" for="k-d"><span>Desktop rate now</span><output id="o-d"></output><input type="range" id="k-d" min="1" max="15" step="0.5" value="10"></label>
+<label class="knob" for="k-m"><span>Mobile rate now</span><output id="o-m"></output><input type="range" id="k-m" min="1" max="15" step="0.5" value="4"></label>
+</div>
+<div class="btns"><button class="btn" id="b-reset" type="button">Reset</button></div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">200 visitors, one dot each. The words and formulas are in topic note C3.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#c3-metric-diagnosis" style="color:inherit">Diagnosing a metric change</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: How can the total fall when nothing got worse?
+(() => {
+  const { grid, t, ln, v, g } = P;
+  const pen = (x, cols, n, k, c) => grid(n, cols, x, 96, 13, 5, i => [c, i < k ? 1 : 0]);
+  const bar = (y, w, c, name, val) => `<rect x="${300 - w}" y="${y}" width="${Math.max(w, 3)}" height="34" rx="4" fill="${v(c)}"/>` + t(312, y + 25, name, 22, 'start', 1) + t(586, y + 25, val, 22, 'end', 1);
+  STORY([
+    ['Desktop visitors buy more often than mobile visitors.', t(96, 62, 'desktop', 20, 'start', 1) + pen(96, 10, 100, 10, 's1') + t(96, 262, '10 in 100 buy', 22, 'start', 1) + t(376, 62, 'mobile', 20, 'start', 1) + pen(376, 10, 100, 4, 's2') + t(376, 262, '4 in 100 buy', 22, 'start', 1)],
+    ['Half and half, the overall rate is 7 in 100.', grid(200, 20, 176, 96, 13, 5, i => [i < 100 ? 's1' : 's2', i < 10 || (i >= 100 && i < 104) ? 1 : 0]) + t(300, 262, '14 of 200 buy: 7%', 24, 'middle', 1)],
+    ['Then the mix shifts. Fewer desktop, more mobile.', t(202, 62, 'desktop 50', 20, 'end', 1) + pen(150, 5, 50, 5, 's1') + t(202, 262, '5 buy', 22, 'end', 1) + ln(236, 44, 236, 270, 'ink', 3) + g(1, t(272, 62, 'mobile 150', 20, 'start', 1) + pen(272, 15, 150, 6, 's2') + t(272, 262, '6 buy', 22, 'start', 1))],
+    ['Nobody behaves differently. The overall rate still drops.', t(300, 150, '7.0% → 5.5%', 56, 'middle', 1) + t(300, 206, 'desktop still 10%, mobile still 4%', 20, 'middle')],
+    ['So ask first: did people change, or the mix?', ln(300, 70, 300, 250, 'ink', 2) + g(1, bar(96, 190, 's3', 'mix', '−1.5 pts')) + bar(176, 0, 'ink2', 'people', '0 pts')]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, rng, width, drag, missions, onResize, knob } = KIT;
+  // Worked example from topic note C3: desktop converts at 10%, mobile at 4%, traffic starts 50 / 50.
+  const N = 200, D0 = 10, M0 = 4, A0 = 100, LO = 20, HI = 180, MAX = 15, B0 = (A0 * D0 + (N - A0) * M0) / N;
+  const S = { a: A0, d: D0, m: M0 };
+  const stage = $('stage'), kd = $('k-d'), km = $('k-m');
+  // every dot has a fixed rank; a pen's buyers are its lowest-ranked dots, so the solid ones barely reshuffle
+  const r0 = rng(5), U = Array.from({ length: N }, () => r0()), ORD = U.map((u, i) => i).sort((a, b) => U[a] - U[b]);
+  const check = missions(['Sink the total, touch no rates', 'Raise both rates, still lose', 'Make the two effects cancel']);
+  let G = {}, dots = null, last = -1;
+  const f1 = v => v.toFixed(1), t10 = v => Math.round(v * 10);
+  const sg = v => { const t = t10(v) / 10; return (t > 0 ? '+' : t < 0 ? '−' : '') + Math.abs(t).toFixed(1); };
+
+  function build(W) {
+    const big = W >= 640, R = big ? 8 : 10, cols = N / R, g = big ? 11 : 7;
+    const p = Math.min(32, (W - (big ? 80 : 44)) / cols), r = p * (big ? 0.27 : 0.285), py = big ? p * 0.92 : p;
+    const X0 = (W - cols * p) / 2, T = big ? 126 : 102, B = T + R * py, e = big ? 9 : 6;
+    const PX0 = X0 - g - r - (big ? 5 : 3), PX1 = W - PX0, hr = big ? 15 : 13, hy = B + e + hr + 3, gy = hy + hr + (big ? 16 : 10);
+    G = { W, big, R, g, p, r, X0, T, B, e, PX0, PX1, hr, hy, gy, yN: big ? 30 : 24, yB: big ? 68 : 53, yS: big ? 90 : 72, yR: T - e - 8, fs: big ? 34 : 26,
+      ty: gy + (big ? 38 : 78), tx0: PX0 + (big ? 244 : 14), tx1: PX1 - 34, H: gy + (big ? 78 : 112) };
+    let c = '';
+    for (let k = 0; k < N; k++) {
+      const j = k % R, x = X0 + (Math.floor(k / R) + (j + 0.5) / R) * p, y = T + (R - 0.5 - j) * py;
+      c += `<circle class="d" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(r - 0.9).toFixed(1)}"/>`;
+    }
+    stage.innerHTML = `<svg viewBox="0 0 ${W} ${G.H.toFixed(0)}" role="img"><g></g><g stroke-width="${big ? 1.8 : 1.6}">${c}</g><g></g></svg>`;
+    dots = [...stage.querySelectorAll('.d')];
+  }
+
+  function head(x, end, name, n, v, v0, col) {
+    const an = end ? ' text-anchor="end"' : '', s = end ? -1 : 1;
+    return `<circle cx="${x + s * 5}" cy="${G.yN - 4}" r="5" fill="var(${col})"/><text class="cap" x="${x + s * 17}" y="${G.yN}"${an}>${name}</text>` +
+      `<text class="num" x="${x}" y="${G.yB}"${an} style="font-size:${G.fs}px">${f1(v)}%<tspan class="word" dx="6" style="font-size:13px;font-weight:400">bought</tspan></text>` +
+      `<text class="word" x="${x}" y="${G.yS}"${an}><tspan class="num">${n}</tspan> visitors${v !== v0 ? ' · before ' + v0 + '%' : ''}</text>`;
+  }
+
+  function split(mix, rate) {
+    const el = $('split'), W = clamp(Math.round(el.clientWidth || 300), 220, 440), x0 = 104, hw = (W - x0) / 2 - 4, cx = x0 + hw + 2;
+    const mx = Math.max(Math.abs(mix), Math.abs(rate)), sc = mx <= 3 ? 3 : mx <= 6 ? 6 : 12, k = hw / sc;
+    let s = '';
+    for (let t = -sc; t <= sc; t += sc / 3) s += `<line x1="${cx + t * k}" x2="${cx + t * k}" y1="2" y2="62" stroke="var(--grid)"/>`;
+    const row = (y, name, v, col) => `<rect x="0" y="${y + 6}" width="10" height="10" rx="2" fill="var(${col})"/><text class="word" x="16" y="${y + 16}" style="font-size:14px">${name}</text>` +
+      `<text class="num" x="${x0 - 10}" y="${y + 17}" text-anchor="end" style="font-size:18px">${sg(v)}</text><rect x="${(cx + Math.min(0, v * k)).toFixed(1)}" y="${y}" width="${Math.abs(v * k).toFixed(1)}" height="22" rx="2" fill="var(${col})"/>`;
+    el.innerHTML = `<svg viewBox="0 0 ${W} 80" role="img" aria-label="Mix effect ${sg(mix)} points, rate effect ${sg(rate)} points">` + s + row(4, 'mix', mix, '--s3') + row(36, 'rate', rate, '--ink2') +
+      `<line x1="${cx}" x2="${cx}" y1="0" y2="64" stroke="var(--ink)" stroke-width="2"/><text x="${cx - hw}" y="78">−${sc}</text><text x="${cx}" y="78" text-anchor="middle">0</text><text x="${cx + hw}" y="78" text-anchor="end">+${sc}</text></svg>`;
+  }
+
+  function render() {
+    const W0 = width(stage);
+    if (W0 !== G.W || !dots) build(W0);
+    const { W, big, R, g, p, X0, T, B, e, PX0, PX1, hr, hy, gy, yR, ty, tx0, tx1 } = G;
+    const a = S.a, b = N - a, wa = a / N, wb = b / N, now = wa * S.d + wb * S.m, dT = now - B0;
+    // mix effect: change in shares valued at the old rates. rate effect: change in rates valued at the new shares.
+    const mix = (wa - A0 / N) * D0 + (wb - (N - A0) / N) * M0, rate = wa * (S.d - D0) + wb * (S.m - M0);
+    const kA = Math.round(a * S.d / 100), kB = Math.round(b * S.m / 100), solid = new Uint8Array(N);
+    let ca = 0, cb = 0;
+    for (const i of ORD) { if (i < a) { if (ca < kA) { solid[i] = 1; ca++; } } else if (cb < kB) { solid[i] = 1; cb++; } }
+    dots.forEach((c, i) => { c.setAttribute('class', 'd ' + (i < a ? 'a' : 'b') + (solid[i] ? ' s' : '')); c.style.transform = `translateX(${i < a ? -g : g}px)`; });
+
+    const svg = stage.firstChild, F = X0 + a / R * p, sd = a < A0 ? 1 : -1, F0 = X0 + A0 / R * p + sd * g, y0 = T - e, y1 = B + e;
+    svg.setAttribute('aria-label', `Desktop pen ${a} visitors at ${f1(S.d)}%, mobile pen ${b} visitors at ${f1(S.m)}%. Overall ${f1(now)}%, ${sg(dT)} points versus ${f1(B0)}% before.`);
+    svg.children[0].innerHTML = (a !== A0 ? `<rect x="${Math.min(F, F0)}" y="${y0}" width="${Math.abs(F - F0)}" height="${y1 - y0}" fill="var(--wash)"/><line x1="${F0}" x2="${F0}" y1="${y0}" y2="${y1}" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="5 4"/>` : '') +
+      `<rect x="${PX0}" y="${y0}" width="${PX1 - PX0}" height="${y1 - y0}" rx="10" fill="none" stroke="var(--grid)"/>`;
+
+    const gx = v => tx0 + clamp(v, 0, MAX) / MAX * (tx1 - tx0), xb = gx(B0), xn = gx(now);
+    let s = head(PX0, 0, 'Desktop', a, S.d, D0, '--s1') + head(PX1, 1, 'Mobile', b, S.m, M0, '--s2');
+    if (a !== A0) {
+      s += `<text class="cap" x="${F0 + sd * 7}" y="${yR + 4}" text-anchor="${sd > 0 ? 'start' : 'end'}">before</text>`;
+      if (Math.abs(F - F0) > 18) s += `<path d="M${F0} ${yR}H${F + sd * 5}" stroke="var(--ink2)" stroke-width="2" fill="none"/><path d="M${F} ${yR}l${sd * 8} -5v10z" fill="var(--ink2)"/>`;
+    }
+    s += `<line x1="${F}" x2="${F}" y1="${y0 - 6}" y2="${hy}" stroke="var(--ink)" stroke-width="2"/><circle cx="${F}" cy="${hy}" r="${hr}" fill="var(--ink)" stroke="var(--surface)" stroke-width="3"/>` +
+      `<path d="M${F - 4} ${hy - 5}l-5 5l5 5M${F + 4} ${hy - 5}l5 5l-5 5" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // gauge: the overall rate always sits between the two pen rates
+    s += `<text class="cap" x="${PX0}" y="${gy + 12}">overall</text><text class="num" x="${PX0}" y="${gy + (big ? 50 : 44)}" style="font-size:${big ? 34 : 28}px">${f1(now)}%<tspan dx="8" style="font-size:15px">${sg(dT)} pts</tspan></text>` +
+      `<line x1="${tx0}" x2="${tx1}" y1="${ty}" y2="${ty}" stroke="var(--grid)"/>`;
+    for (let t = 0; t <= MAX; t++) { const h = t % 5 ? 3 : 6; s += `<line x1="${gx(t)}" x2="${gx(t)}" y1="${ty - h}" y2="${ty + h}" stroke="var(--grid)"/>`; }
+    s += `<text x="${tx0 - 7}" y="${ty + 4}" text-anchor="end">0</text><text x="${tx1 + 7}" y="${ty + 4}">${MAX}%</text>` +
+      `<line x1="${gx(S.d)}" x2="${gx(S.m)}" y1="${ty}" y2="${ty}" stroke="var(--ghost)" stroke-width="2"/><line x1="${xb}" x2="${xn}" y1="${ty}" y2="${ty}" stroke="var(--ink)" stroke-width="5"/>` +
+      `<line x1="${xb}" x2="${xb}" y1="${ty - 15}" y2="${ty + 12}" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="3 3"/><text x="${xb}" y="${ty - 20}" text-anchor="middle">before ${f1(B0)}%</text>`;
+    let xd = gx(S.d), xm = gx(S.m);
+    s += `<circle cx="${xd}" cy="${ty}" r="5.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/><circle cx="${xm}" cy="${ty}" r="5.5" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>`;
+    const wd = 50, wm = 42, need = (wd + wm) / 2 + 8;
+    if (Math.abs(xd - xm) < need) { const mid = (xd + xm) / 2, q = xd >= xm ? 1 : -1; xd = mid + q * need / 2; xm = mid - q * need / 2; }
+    const lx = Math.min(xd - wd / 2, xm - wm / 2), rx = Math.max(xd + wd / 2, xm + wm / 2), sh = lx < PX0 ? PX0 - lx : rx > PX1 ? PX1 - rx : 0;
+    s += `<text class="word" x="${xd + sh}" y="${ty + 24}" text-anchor="middle">desktop</text><text class="word" x="${xm + sh}" y="${ty + 24}" text-anchor="middle">mobile</text>` +
+      `<path d="M${xn} ${ty - 4}l-7 -11h14z" fill="var(--ink)" stroke="var(--surface)" stroke-width="1.5"/>`;
+    svg.children[2].innerHTML = s;
+
+    stage.setAttribute('aria-valuenow', Math.round(wa * 100)); stage.setAttribute('aria-valuetext', `Desktop ${a}, mobile ${b}`);
+    $('r-all').innerHTML = f1(now) + '%<small>' + sg(dT) + ' pts</small>';
+    $('s-all').innerHTML = '<i class="b"></i>'.repeat(kA) + '<i class="o"></i>'.repeat(kB);
+    $('o-d').textContent = f1(S.d) + '%'; $('o-m').textContent = f1(S.m) + '%';
+    split(mix, rate);
+
+    const fell = f1(-t10(dT) / 10);
+    const ok = [S.d === D0 && S.m === M0 && t10(dT) <= -10, S.d > D0 && S.m > M0 && t10(dT) <= -1, Math.abs(dT) <= 0.1 + 1e-9 && t10(Math.abs(mix)) >= 10];
+    const say = [`Total fell ${fell} pts. No segment changed. Only the mix did.`, `Both segments improved. The total still fell ${fell} pts.`, `Mix ${sg(mix)}, rate ${sg(rate)}. A flat total hides two real changes.`];
+    const was = check.done.slice();
+    check(ok, say);
+    check.done.forEach((v, i) => { if (v && !was[i]) last = i; });
+    if (last >= 0 && ok[last]) $('aha').textContent = say[last]; // keep the numbers in the line live
+  }
+
+  drag(stage, ev => { S.a = clamp(Math.round((ev.x - G.X0) / G.p * G.R), LO, HI); render(); });
+  stage.addEventListener('keydown', ev => {
+    const d = ev.key === 'ArrowLeft' ? -1 : ev.key === 'ArrowRight' ? 1 : 0;
+    if (!d) return;
+    ev.preventDefault(); S.a = clamp(d < 0 ? Math.ceil(S.a / 2) * 2 - 2 : Math.floor(S.a / 2) * 2 + 2, LO, HI); render();
+  });
+  knob('k-d', v => { S.d = v; render(); });
+  knob('k-m', v => { S.m = v; render(); });
+  $('b-reset').addEventListener('click', () => { S.a = A0; kd.value = S.d = D0; km.value = S.m = M0; render(); });
+  onResize(render);
+  render();
+})();
+</script>
+</body>
+</html>

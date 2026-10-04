@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roll Downhill</title>
+<meta name="description" content="How does a model find its best settings? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="Roll Downhill">
+<meta property="og:description" content="How does a model find its best settings? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:end}
+.lossc{grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:end}
+.lossc>div{display:grid;gap:6px}
+.lossc svg{display:block;width:100%;height:74px}
+@media (max-width:560px){
+.ctl{grid-template-columns:minmax(0,1fr)}
+.reads{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.read{padding:12px}
+.read .big{font-size:36px}
+.lossc{grid-template-columns:minmax(0,1fr)}
+.lossc svg{height:44px}
+}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">B6 · Deep learning fundamentals</p><h1>Roll downhill</h1><p class="sub">How does a model find its best settings?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag the ball. Pick a step size. Roll.</p></div>
+<div class="stage still" id="stage" tabindex="0" role="slider" aria-label="Starting weight" aria-valuemin="-0.5" aria-valuemax="3.5"></div>
+<div class="reads">
+<div class="read"><div class="big" id="r-steps"></div><div class="cap">steps to the bottom</div><div class="strip" id="s-steps"></div></div>
+<div class="read lossc"><div><div class="big" id="r-loss"></div><div class="cap">loss now</div></div><svg id="chart" role="img" aria-label="Loss after each step"></svg></div>
+</div>
+<div class="ctl">
+<div class="knobs"><label class="knob" for="k-lr"><span>Step size</span><output id="o-lr"></output><input type="range" id="k-lr" min="0.01" max="0.3" step="0.005" value="0.05"></label></div>
+<div class="btns"><button class="btn go" id="b-roll" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>Roll</button><button class="btn" id="b-reset" type="button">Reset</button></div>
+</div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">One dot per step. The words and formulas are in topic note B6.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#b6-backprop" style="color:inherit">Neural networks and backpropagation</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: How does a model find its best settings?
+(() => {
+  const { dot, t, ln, pth, curve, v, g } = P;
+  const Y = x => 270 - 220 * ((x - 300) / 250) ** 2, hill = d => pth(curve(Y, 50, 550), d ? 'ghost' : 'ink2', 2, '', d ? '5 6' : '');
+  const best = ln(300, 276, 300, 288, 'ink', 2) + t(300, 308, 'best', 18, 'middle', 1), ball = x => dot(x, Y(x) - 12, 12, 's2');
+  const walk = xs => xs.slice(1).map((x, i) => g(i, ln(xs[i], Y(xs[i]) - 8, x, Y(x) - 8, 's2', 2) + dot(x, Y(x) - 8, i === xs.length - 2 ? 12 : 6, 's2', i === xs.length - 2 ? 1 : 0))).join('') + dot(xs[0], Y(xs[0]) - 8, 6, 's2', 0);
+  const steps = (x, f, n) => { const a = [x]; for (let i = 0; i < n; i++) a.push(300 + (a[i] - 300) * f); return a; };
+  const tan = x => { const m = -440 * (x - 300) / 62500; return ln(x - 46, Y(x) - 12 - 46 * m, x + 46, Y(x) - 12 + 46 * m, 'ink', 2); };
+  STORY([
+    ['Every setting has an error. Lowest is best.', hill(0) + best + ball(110) + t(132, 128, 'high error', 18, 'start', 1) + t(586, 308, 'setting →', 16, 'end') + t(20, 36, 'error ↑', 16)],
+    ['The model is in fog. It only feels the slope.', hill(1) + pth(curve(Y, 70, 150), 'ink2', 2) + ball(110) + g(1, tan(110)) + t(300, 250, '?', 40, 'middle', 1)],
+    ['So it steps downhill. Again and again.', hill(0) + best + walk(steps(110, 0.6, 5))],
+    ['Tiny steps crawl.', hill(0) + best + walk(steps(110, 0.94, 6)) + t(210, 150, 'still far', 18, 'start', 1)],
+    ['Giant steps leap over the valley and climb out.', hill(0) + best + walk(steps(262, -1.5, 4))]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, reduced, width, drag, missions, onResize, knob } = KIT;
+  // One weight, loss (2w - 3)^2, minimum at 1.5 (handbook B6). Each step multiplies the distance to the minimum by 1 - 8 * rate.
+  const MIN = 1.5, XD = 2.3, FAR = 2, NEAR = 0.2, CAP = 25, TOL = 0.01, HOME = 0.5;
+  const loss = w => (2 * w - 3) ** 2, grad = w => 8 * w - 12;
+  const S = { w0: HOME, lr: 0.05, mode: 'idle', t: 0 }, G = {};
+  const stage = $('stage'), check = missions(['Reach the bottom within 5 steps', 'Zig-zag and still land', 'Make it blow up']);
+  let R = null, raf = 0;
+  const f = v => v.toFixed(1);
+  const sgn = v => (Math.abs(v) < 0.05 ? 0 : v).toFixed(1).replace('-', '−');
+  const fl = v => v.toFixed(v < 9.995 ? 2 : v < 99.95 ? 1 : 0);
+  // the whole run from the start: stops at the bottom, when the ball leaves the picture, or after CAP steps
+  function run() {
+    const ws = [S.w0];
+    let w = S.w0, n = 0;
+    for (let k = 1; k <= CAP; k++) {
+      w -= S.lr * grad(w); ws.push(w);
+      if (Math.abs(w - MIN) > XD) break;
+      if (Math.abs(w - MIN) < TOL) { n = k; break; }
+    }
+    return { ws, n };
+  }
+  function geo() {
+    const W = width(stage), big = W >= 640, H = big ? 460 : 384, yF = H - (big ? 76 : 70);
+    Object.assign(G, { W, H, big, yF, r: big ? 12 : 10, sx: (W - (big ? 80 : 28)) / (2 * XD), sy: (yF - 16) / (4 * XD * XD) });
+  }
+  const X = w => G.W / 2 + (w - MIN) * G.sx, Y = w => G.yF - loss(w) * G.sy;
+  // contact point on the curve, unit tangent, and the centre of a ball resting there
+  function at(w) {
+    const x = X(w), y = Y(w), a = G.sx, b = -grad(w) * G.sy, q = Math.hypot(a, b);
+    return { x, y, tx: a / q, ty: b / q, cx: x + G.r * b / q, cy: y - G.r * a / q };
+  }
+  // a hop from (ax, ay) to (bx, by) as a quadratic arc, cut at u in 0..1
+  function hop(ax, ay, bx, by, u) {
+    const cx = (ax + bx) / 2, cy = Math.min(ay, by) - clamp(Math.abs(bx - ax) * 0.4, 12, G.big ? 120 : 84);
+    const qx = ax + (cx - ax) * u, qy = ay + (cy - ay) * u, rx = cx + (bx - cx) * u, ry = cy + (by - cy) * u;
+    const h = { x: qx + (rx - qx) * u, y: qy + (ry - qy) * u, dx: rx - qx, dy: ry - qy };
+    h.d = `M${f(ax)} ${f(ay)}Q${f(qx)} ${f(qy)} ${f(h.x)} ${f(h.y)}`;
+    return h;
+  }
+  function head(h) {
+    const q = Math.hypot(h.dx, h.dy) || 1, ux = h.dx / q, uy = h.dy / q, x = h.x - ux * 6, y = h.y - uy * 6, c = 0.88, s = 0.48;
+    return `M${f(x - 7 * (ux * c - uy * s))} ${f(y - 7 * (uy * c + ux * s))}L${f(x)} ${f(y)}L${f(x - 7 * (ux * c + uy * s))} ${f(y - 7 * (uy * c - ux * s))}`;
+  }
+  function render() {
+    geo();
+    const { W, H, big, yF, r } = G, idle = S.mode === 'idle', rolling = S.mode === 'roll';
+    if (S.mode === 'done') R = run();
+    const ws = idle ? [S.w0] : R.ws, last = ws.length - 1, t = idle ? 0 : rolling ? Math.min(S.t, last) : last;
+    const k = Math.min(Math.floor(t), last), e = Math.min(1, (t - k) / 0.82), u = e * e * (3 - 2 * e), fly = rolling && k < last && u > 0;
+    const P = ws.map(at), here = P[k], wNow = ws[k], m = 1 - 8 * S.lr, O = 'stroke="var(--s2)" fill="none"';
+    const y0 = Y(MIN - W / 2 / G.sx), curve = `M0 ${f(y0)}Q${W / 2} ${f(2 * yF - y0)} ${W} ${f(y0)}`;
+    let s = `<path d="${curve}V${H}H0Z" fill="var(--wash)"/>`;
+    (big ? [5, 10, 15, 20] : [5, 10, 15]).forEach(L => {
+      const d = Math.sqrt(L) / 2 * G.sx, y = yF - L * G.sy;
+      s += `<path d="M${f(W / 2 - d)} ${f(y)}H${f(W / 2 + d)}" stroke="var(--grid)"/><text x="${f(W / 2 - d - 7)}" y="${f(y + 4)}" text-anchor="end">${L}</text>`;
+    });
+    s += `<path d="M${W / 2} 22V${yF + 12}" stroke="var(--ghost)" stroke-dasharray="2 5"/><text class="cap" x="${W / 2}" y="${yF + 30}" text-anchor="middle">bottom</text>` +
+      `<path d="${curve}" fill="none" stroke="var(--s1)" stroke-width="2"/>` +
+      `<text x="${W - 12}" y="${H - 12}" text-anchor="end">weight →</text><text transform="translate(${big ? 18 : 15} ${f((yF + 16) / 2)}) rotate(-90)" text-anchor="middle">loss →</text>` +
+      `<path d="M${f(22 - here.tx * 9)} ${f(H - 16 - here.ty * 9)}L${f(22 + here.tx * 9)} ${f(H - 16 + here.ty * 9)}" stroke="var(--s3)" stroke-width="2" stroke-linecap="round"/><text class="word" x="38" y="${H - 12}">slope <tspan class="num">${sgn(grad(wNow))}</tspan></text>`;
+    if (idle) {
+      // preview of the first step: slope times step size
+      const b = at(S.w0 - S.lr * grad(S.w0)), h = hop(here.x, here.y, b.x, b.y, 1);
+      s += `<path d="${h.d}" ${O} stroke-width="1.5" stroke-dasharray="4 4"/><path d="${head(h)}" ${O} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${f(b.x)}" cy="${f(b.y)}" r="4.5" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.5"/>`;
+    } else {
+      let arcs = '', heads = '', dots = '';
+      for (let i = 1; i <= k + (fly ? 1 : 0); i++) {
+        const a = P[i - 1], b = P[i], h = hop(a.x, a.y, b.x, b.y, i > k ? u : 1);
+        arcs += h.d;
+        if (i <= k && Math.abs(b.x - a.x) >= 28) heads += head(h);
+        if (i < k || (fly && i === k)) dots += `<circle cx="${f(b.x)}" cy="${f(b.y)}" r="4" fill="var(--s2)" stroke="var(--surface)" stroke-width="1.5"/>`;
+      }
+      s += `<path d="${arcs}" ${O} stroke-width="1.5" stroke-opacity=".7"/>` + (heads ? `<path d="${heads}" ${O} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>` : '') + dots;
+      const a = P[0], left = S.w0 < MIN, lx = a.x + (left ? -11 : 11);
+      if (left ? lx - 34 > 30 : lx + 34 < W - 6) s += `<text x="${f(lx)}" y="${f(a.y + 17)}" text-anchor="${left ? 'end' : 'start'}">start</text>`;
+      s += `<g class="grab" data-h="ball" transform="translate(${f(a.x)} ${f(a.y)})"><circle r="20" fill="none" pointer-events="all"/><circle r="5.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/></g>`;
+    }
+    const tl = big ? 46 : 32;
+    let bx = here.cx, by = here.cy;
+    if (fly) { const b = P[k + 1], h = hop(here.cx, here.cy, b.cx, b.cy, u); bx = h.x; by = h.y; }
+    s += `<path d="M${f(here.x - here.tx * tl)} ${f(here.y - here.ty * tl)}L${f(here.x + here.tx * tl)} ${f(here.y + here.ty * tl)}" stroke="var(--s3)" stroke-width="2" stroke-linecap="round"/>` +
+      `<g class="grab" data-h="ball" transform="translate(${f(bx)} ${f(by)})"><circle r="24" fill="none" pointer-events="all"/><circle r="${r}" fill="var(--ink)" stroke="var(--surface)" stroke-width="3"/>` +
+      (idle ? `<path transform="rotate(${f(Math.atan2(here.ty, here.tx) * 180 / Math.PI)})" d="M-2.5 -3.5l-3.5 3.5l3.5 3.5M2.5 -3.5l3.5 3.5l-3.5 3.5" fill="none" stroke="var(--surface)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>` : '') + '</g>';
+    const done = S.mode === 'done', never = Math.abs(m) > 1 - 1e-9;
+    const steps = idle ? '?' : rolling ? String(k) : R.n ? String(R.n) : never ? 'never' : CAP + '+';
+    const say = idle ? `First step lands at weight ${(S.w0 - S.lr * grad(S.w0)).toFixed(2)}.` : rolling ? `Rolling, step ${k}.` : R.n ? `At the bottom in ${R.n} steps.` : never ? 'It never reaches the bottom.' : `Not at the bottom after ${CAP} steps.`;
+    stage.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ball at weight ${wNow.toFixed(2)}, loss ${fl(loss(wNow))}, slope ${sgn(grad(wNow))}. Step size ${+S.lr.toFixed(3)}. ${say}">${s}</svg>`;
+    stage.setAttribute('aria-valuenow', S.w0.toFixed(2));
+    stage.dataset.state = S.mode;
+    $('r-steps').textContent = steps;
+    $('s-steps').innerHTML = '<i class="o"></i>'.repeat(k);
+    $('r-loss').textContent = fl(loss(wNow));
+    $('o-lr').textContent = 'learning rate ' + S.lr.toFixed(3);
+    // loss per step, one bar each
+    const ch = $('chart'), cw = Math.max(120, Math.round(ch.clientWidth || 240)), hh = Math.round(ch.clientHeight || 60), bw = cw / (CAP + 1), top = Math.max(...ws.map(loss));
+    let bars = `<path d="M0 ${hh - 0.5}H${cw}" stroke="var(--grid)"/>`;
+    for (let i = 0; i <= k; i++) { const bh = Math.max(2, loss(ws[i]) / top * (hh - 4)); bars += `<rect x="${f(i * bw + 1)}" y="${f(hh - 1 - bh)}" width="${f(Math.max(2, bw - 2.5))}" height="${f(bh)}" rx="1" fill="var(--s2)"/>`; }
+    ch.setAttribute('viewBox', `0 0 ${cw} ${hh}`); ch.innerHTML = bars;
+    if (done) {
+      const L0 = loss(ws[0]), Ln = loss(ws[last]), crossed = ws.some(w => (w - MIN) * (ws[0] - MIN) < 0);
+      check([R.n > 0 && R.n <= 5, R.n > 0 && crossed && S.lr > 0.125 && S.lr < 0.25, S.lr > 0.25 && Ln > L0],
+        [`Step size ${+S.lr.toFixed(3)}: at the bottom in ${R.n} step${R.n > 1 ? 's' : ''}.`, `Each jump overshoots, yet lands ${Math.round((1 - Math.abs(m)) * 100)}% closer.`, `Step too big: every jump lands higher. Loss ${fl(L0)} to ${fl(Ln)}.`]);
+    }
+  }
+  function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
+  function roll() {
+    stop(); R = run(); S.t = 0;
+    if (reduced()) { S.mode = 'done'; render(); return; }
+    S.mode = 'roll';
+    let then = performance.now();
+    const tick = now => {
+      S.t += Math.max(0, now - then) / (S.t < 8 ? 250 : 150); then = now;
+      if (S.t >= R.ws.length - 1) { raf = 0; S.mode = 'done'; } else raf = requestAnimationFrame(tick);
+      render();
+    };
+    render(); raf = requestAnimationFrame(tick);
+  }
+  // starting weight: snapped to 0.02, kept on the walls (never parked on the bottom itself)
+  function place(w, dir) {
+    w = clamp(Math.round(w * 50) / 50, MIN - FAR, MIN + FAR);
+    if (Math.abs(w - MIN) < NEAR - 1e-9) w = MIN + (dir || Math.sign(w - MIN) || Math.sign(S.w0 - MIN)) * NEAR;
+    stop(); S.mode = 'idle'; S.w0 = Math.round(w * 50) / 50; render();
+  }
+  drag(stage, e => { if (e.h === 'ball' && e.type === 'move') place(MIN + (e.x - G.W / 2) / G.sx); });
+  stage.addEventListener('keydown', e => {
+    const d = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[e.key];
+    if (d) { e.preventDefault(); place(S.w0 + d * 0.1, d); } else if (e.key === 'Enter') roll();
+  });
+  knob('k-lr', v => { S.lr = Math.round(v * 1000) / 1000; if (S.mode === 'roll') { stop(); S.mode = 'done'; } render(); });
+  $('b-roll').addEventListener('click', roll);
+  $('b-reset').addEventListener('click', () => { stop(); if (S.mode === 'idle') S.w0 = HOME; S.mode = 'idle'; render(); });
+  onResize(render);
+  render();
+})();
+</script>
+</body>
+</html>

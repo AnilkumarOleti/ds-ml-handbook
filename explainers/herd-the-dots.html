@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Herd the Dots</title>
+<meta name="description" content="How does a computer find groups nobody labelled? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="Herd the Dots">
+<meta property="og:description" content="How does a computer find groups nobody labelled? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+/* Herd the Dots: page-only rules */
+.reads{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+.read .big{display:flex;align-items:center;gap:10px}
+.read .big svg{width:22px;height:22px;flex:none}
+#bars{display:block;width:100%;height:54px;margin-top:2px}
+#bars text{font:11px var(--sans);fill:var(--muted)}
+.strip i.k{--c:var(--ink)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between}
+.pick{padding:5px 14px 5px 9px;gap:8px}
+.btn[aria-disabled="true"]{opacity:.4;cursor:default}
+.grab,.grab *{touch-action:none}
+.grab:focus{outline:none}
+.grab:focus-visible .hit{stroke:var(--s1);stroke-width:2px}
+.grab text{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.grab .ring{stroke-dasharray:3.2 3.1}
+.set .grab .ring{stroke-dasharray:none;stroke-width:3.5px}
+@media (max-width:600px){
+.ctl{display:grid;gap:10px}
+.ctl .btn{flex:1;justify-content:center}
+.pick{flex-direction:column;gap:3px;padding:8px 4px 6px;border-radius:14px;font-size:13px}
+}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">B5 · Unsupervised learning</p><h1>Herd the Dots</h1><p class="sub">How does a computer find groups nobody labelled?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag a centre. Dots join the nearest one.</p></div>
+<div class="stage still" id="stage"></div>
+<div class="reads">
+<div class="read"><div class="big" id="r-spr"></div><div class="cap">spread<b>within-cluster sum of squares</b></div><svg id="bars" aria-hidden="true"></svg></div>
+<div class="read"><div class="big" id="r-st"></div><div class="cap" id="c-st"></div><div class="strip" id="s-st"></div></div>
+</div>
+<div class="ctl">
+<div class="btns"><button class="btn go" id="step" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v11l8-5.5z" fill="currentColor"/><path d="M13.5 3v10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Step</button><button class="btn" id="mix" type="button"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 4.5h3l6 7h4M1.5 11.5h3l1.6-1.9M8.9 6.4l1.6-1.9h4M12.6 2.6l1.9 1.9l-1.9 1.9M12.6 9.6l1.9 1.9l-1.9 1.9"/></svg>Shuffle</button></div>
+<div class="btns picks" role="group" aria-label="Dots"><button class="btn pick" id="p-round" type="button" aria-pressed="true"><svg aria-hidden="true"></svg>Round</button><button class="btn pick" id="p-uneven" type="button" aria-pressed="false"><svg aria-hidden="true"></svg>Uneven</button><button class="btn pick" id="p-long" type="button" aria-pressed="false"><svg aria-hidden="true"></svg>Stretched</button></div>
+</div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">Each dot is one data point. The words and formulas are in topic note B5.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#b5-kmeans" style="color:inherit">k-means and clustering</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: How does a computer find groups nobody labelled?
+(() => {
+  const { dot, t, ln, rng, randn, v, g } = P;
+  const r = rng(9), pts = [[150, 120], [300, 225], [450, 120]].flatMap(c => Array.from({ length: 22 }, () => [c[0] + 34 * randn(r), c[1] + 26 * randn(r)]));
+  const C = ['s1', 's2', 's3'], near = F => pts.map(p => { let b = 0; F.forEach((f, j) => { if ((p[0] - f[0]) ** 2 + (p[1] - f[1]) ** 2 < (p[0] - F[b][0]) ** 2 + (p[1] - F[b][1]) ** 2) b = j; }); return b; });
+  const mid = (F, L) => F.map((f, j) => { const m = pts.filter((p, i) => L[i] === j); return m.length ? [m.reduce((a, p) => a + p[0], 0) / m.length, m.reduce((a, p) => a + p[1], 0) / m.length] : f; });
+  const dots = L => pts.map((p, i) => dot(p[0], p[1], 5.5, L ? C[L[i]] : 'ghost')).join('');
+  const flag = (f, j, old) => old ? `<circle cx="${f[0].toFixed(1)}" cy="${f[1].toFixed(1)}" r="13" fill="none" stroke="${v('ghost')}" stroke-width="2" stroke-dasharray="3 4"/>` : `<circle cx="${f[0].toFixed(1)}" cy="${f[1].toFixed(1)}" r="14" fill="${v('surface')}" stroke="${v('ink')}" stroke-width="3"/>` + dot(f[0], f[1], 7, C[j]);
+  const F0 = [[90, 262], [270, 56], [530, 250]], L0 = near(F0), F1 = mid(F0, L0);
+  let F = F1, L = near(F1); for (let i = 0; i < 12; i++) { F = mid(F, L); L = near(F); }
+  STORY([
+    ['Dots with no labels. Can you see the groups?', dots()],
+    ['Drop three flags anywhere.', dots() + g(1, F0.map((f, j) => flag(f, j)).join(''))],
+    ['Every dot joins its nearest flag.', dots(L0) + F0.map((f, j) => flag(f, j)).join('')],
+    ['Each flag moves to the middle of its dots.', dots(L0) + F0.map((f, j) => flag(f, j, 1) + ln(f[0], f[1], F1[j][0], F1[j][1], 'ink', 2, '2 5')).join('') + g(1, F1.map((f, j) => flag(f, j)).join(''))],
+    ['Repeat until nothing moves. Groups found.', dots(L) + F.map((f, j) => flag(f, j)).join('')]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, rng, randn, num, reduced, width, drag, missions, onResize } = KIT;
+  const COL = ['--s1', '--s2', '--s3'], NAME = ['Circle', 'Square', 'Triangle'], KEYS = ['round', 'uneven', 'long'];
+  // One world per layout so the dots fill the stage. A group is [x, y, sd x, sd y, dots, flat]; flat lays dots evenly along x.
+  // seed picks the three starting dots for each set.
+  const WORLD = {
+    big: { w: 11, h: 6, seed: { round: 3, uneven: 6, long: 12 }, sets: {
+      round: [[3, 2, .55, .55, 50], [5.5, 4.3, .55, .55, 50], [8.3, 2.1, .55, .55, 50]],
+      uneven: [[4, 3, .9, .9, 90], [8.5, 1.6, .3, .3, 30], [8.7, 4.4, .3, .3, 30]],
+      long: [[5.5, 1.5, 4.4, .2, 50, 1], [5.5, 3, 4.4, .2, 50, 1], [5.5, 4.5, 4.4, .2, 50, 1]] } },
+    small: { w: 7.2, h: 7, seed: { round: 12, uneven: 6, long: 7 }, sets: {
+      round: [[1.9, 1.8, .55, .55, 50], [5.3, 2.7, .55, .55, 50], [3.1, 5.3, .55, .55, 50]],
+      uneven: [[3.6, 2.6, .9, .9, 90], [2.2, 6, .3, .3, 30], [5, 6, .3, .3, 30]],
+      long: [[3.6, 1.9, 3, .2, 50, 1], [3.6, 3.5, 3, .2, 50, 1], [3.6, 5.1, 3, .2, 50, 1]] } }
+  };
+  const stage = $('stage'), S = { ds: 'round', lay: '', P: [], C: [], L: [], steps: 0, H: [], shuf: 40, lo: {}, hi: {}, keep: {} }, G = {};
+  let E, shown = [], finish = null, off = [0, 0];
+  const check = missions(['Step until nothing moves', 'Find a start that ends worse', 'Watch it cut a long group']);
+  const f = v => +v.toFixed(1);
+  const d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+
+  function points(ds) {
+    const Wd = WORLD[S.lay], r = rng(42), P = [];
+    Wd.sets[ds].forEach((g, gi) => {
+      for (let i = 0; i < g[4]; i++) {
+        const x = g[5] ? g[0] + g[2] * (2 * r() - 1) : g[0] + g[2] * randn(r), y = g[1] + g[3] * randn(r);
+        P.push([clamp(x, .25, Wd.w - .25), clamp(y, .25, Wd.h - .25), gi]);
+      }
+    });
+    return P;
+  }
+  // assign step: every dot joins its nearest centre
+  const near = () => S.P.map(p => { let b = 0; for (let j = 1; j < 3; j++) if (d2(p, S.C[j]) < d2(p, S.C[b])) b = j; return b; });
+  // update step target: the middle of each herd (an empty herd leaves its centre where it is)
+  const means = () => S.C.map((c, j) => {
+    let n = 0, x = 0, y = 0;
+    S.P.forEach((p, i) => { if (S.L[i] === j) { n++; x += p[0]; y += p[1]; } });
+    return n ? [x / n, y / n, n] : [c[0], c[1], 0];
+  });
+  const spread = () => S.P.reduce((s, p, i) => s + d2(p, S.C[S.L[i]]), 0);
+  const settled = () => means().every((m, j) => d2(m, S.C[j]) < 1e-9);
+  // dots whose herd is not the best match for their true group
+  function wrong() {
+    let best = 0;
+    [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]].forEach(pm => { let a = 0; S.P.forEach((p, i) => { if (pm[S.L[i]] === p[2]) a++; }); best = Math.max(best, a); });
+    return S.P.length - best;
+  }
+  function fresh() { S.L = near(); S.steps = 0; S.H = [spread()]; }
+  // start the centres on three dots: random ones, or (far) spread well apart, which usually ends better
+  function deal(n, far) {
+    const r = rng(n * 7919 + 3), C = [], pick = () => S.P[Math.floor(r() * S.P.length)];
+    if (far) { C.push(pick()); while (C.length < 3) C.push(S.P.reduce((b, p) => { const d = Math.min(...C.map(c => d2(p, c))); return d > b[1] ? [p, d] : b; }, [null, -1])[0]); }
+    while (C.length < 3) { const p = pick(); if (!C.includes(p)) C.push(p); }
+    S.C = C.map(p => [p[0], p[1]]); fresh();
+  }
+  function load(ds) { S.ds = ds; S.P = points(ds); deal(WORLD[S.lay].seed[ds]); }
+
+  function geo() {
+    const W = width(stage), big = W >= 640, lay = big ? 'big' : 'small', Wd = WORLD[lay];
+    const H = big ? Math.max(380, Math.round(W * Wd.h / Wd.w)) : clamp(Math.round(W * Wd.h / Wd.w), 340, 480), sc = Math.min(W / Wd.w, H / Wd.h);
+    Object.assign(G, { W, H, big, lay, sc, ox: (W - Wd.w * sc) / 2, oy: (H - Wd.h * sc) / 2, r: big ? 4.3 : 3.5 });
+  }
+  const shape = (j, x, y, r) => j === 0 ? `M${f(x - r)} ${f(y)}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0z`
+    : j === 1 ? `M${f(x - .9 * r)} ${f(y - .9 * r)}h${f(1.8 * r)}v${f(1.8 * r)}h${f(-1.8 * r)}z`
+      : `M${f(x)} ${f(y - 1.4 * r)}l${f(1.3 * r)} ${f(2.2 * r)}h${f(-2.6 * r)}z`;
+
+  function thumbs() {
+    const Wd = WORLD[S.lay], k = G.big ? 22 / Wd.h : 30 / Wd.h;
+    KEYS.forEach(key => {
+      const svg = $('p-' + key).firstElementChild;
+      svg.setAttribute('viewBox', `0 0 ${Wd.w * 4} ${Wd.h * 4}`);
+      svg.style.width = f(Wd.w * k) + 'px'; svg.style.height = f(Wd.h * k) + 'px';
+      svg.innerHTML = points(key).filter((p, i) => i % 2 === 0).map(p => `<circle cx="${f(p[0] * 4)}" cy="${f(p[1] * 4)}" r="1.25" fill="currentColor"/>`).join('');
+    });
+  }
+
+  function build() {
+    geo();
+    if (G.lay !== S.lay) {
+      // the two layouts use different dots, so park this layout's progress and bring back the other's
+      if (S.lay) S.keep[S.lay + S.ds] = { C: S.C, L: S.L, steps: S.steps, H: S.H };
+      S.lay = G.lay; load(S.ds); Object.assign(S, S.keep[S.lay + S.ds] || {}); thumbs();
+    }
+    const { W, H } = G;
+    stage.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img">` +
+      '<g stroke="var(--ghost)" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round">' + '<line class="b"/>'.repeat(3) + '</g>' +
+      COL.map(c => `<path class="s" fill="none" stroke="var(${c})" stroke-opacity=".3"/>`).join('') +
+      '<path class="d" stroke-width="0"/>'.repeat(S.P.length) +
+      '<line class="p" stroke="var(--ink)" stroke-width="2"/>'.repeat(3) + '<path class="t" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>'.repeat(3) +
+      COL.map((c, j) => `<g class="grab" data-h="${j}" tabindex="0" role="slider" aria-label="${NAME[j]} centre. Arrow keys move it."><circle class="hit" r="${G.big ? 25 : 22}" fill="none" pointer-events="all"/><circle class="ring" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/><path d="${shape(j, 0, 0, 7)}" fill="var(${c})"/><text class="num" y="5" style="font-size:13px"></text></g>`).join('') + '</svg>';
+    const all = q => [...stage.querySelectorAll(q)];
+    E = { svg: stage.firstChild, b: all('.b'), s: all('.s'), d: all('.d'), p: all('.p'), t: all('.t'), g: all('.grab') };
+    shown = [];
+    KEYS.forEach(key => $('p-' + key).setAttribute('aria-pressed', key === S.ds));
+    update();
+  }
+
+  function update() {
+    const { sc, ox, oy, W, r } = G, M = means(), spr = spread(), N = S.P.length;
+    const set = !finish && M.every((m, j) => d2(m, S.C[j]) < 1e-9), c = S.C.map(q => [f(ox + q[0] * sc), f(oy + q[1] * sc)]);
+    // dots and their spokes
+    const sp = ['', '', ''];
+    S.P.forEach((p, i) => {
+      const j = S.L[i], x = f(ox + p[0] * sc), y = f(oy + p[1] * sc);
+      sp[j] += `M${c[j][0]} ${c[j][1]}L${x} ${y}`;
+      if (shown[i] === j) return;
+      const e = E.d[i];
+      e.setAttribute('d', shape(j, x, y, r)); e.setAttribute('fill', `var(${COL[j]})`); e.setAttribute('stroke', `var(${COL[j]})`);
+      if (shown[i] != null && e.animate && !reduced()) e.animate([{ strokeWidth: '7px' }, { strokeWidth: '0px' }], { duration: 450, easing: 'ease-out' });
+      shown[i] = j;
+    });
+    sp.forEach((d, j) => E.s[j].setAttribute('d', d));
+    // territory borders: the part of each two-centre bisector that the third centre does not own
+    [[0, 1, 2], [0, 2, 1], [1, 2, 0]].forEach(([i, j, k], n) => {
+      const a = c[i], b = c[j], q = c[k], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), T = 2000;
+      const ux = -dy / (len || 1), uy = dx / (len || 1), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      const A = 2 * (ux * (q[0] - a[0]) + uy * (q[1] - a[1])), B = (q[0] - a[0]) * (q[0] - b[0]) + (q[1] - a[1]) * (q[1] - b[1]);
+      let t0 = -T, t1 = T;
+      if (A > 1e-6) t1 = Math.min(T, B / A); else if (A < -1e-6) t0 = Math.max(-T, B / A); else if (B < 0) t1 = t0;
+      if (len < 1 || t1 <= t0) t0 = t1 = 0;
+      [['x1', mx + t0 * ux], ['y1', my + t0 * uy], ['x2', mx + t1 * ux], ['y2', my + t1 * uy]].forEach(v => E.b[n].setAttribute(v[0], f(v[1])));
+    });
+    // centres, and the pull towards the middle of each herd
+    M.forEach((m, j) => {
+      const mx = f(ox + m[0] * sc), my = f(oy + m[1] * sc), far = Math.hypot(mx - c[j][0], my - c[j][1]) > 3, g = E.g[j], t = g.lastChild, left = c[j][0] > W - 56;
+      [['x1', c[j][0]], ['y1', c[j][1]], ['x2', mx], ['y2', my], ['visibility', far ? 'visible' : 'hidden']].forEach(v => E.p[j].setAttribute(v[0], v[1]));
+      E.t[j].setAttribute('d', shape(j, mx, my, 4)); E.t[j].setAttribute('visibility', far ? 'visible' : 'hidden');
+      g.setAttribute('transform', `translate(${c[j][0]} ${c[j][1]})`); g.setAttribute('aria-valuenow', m[2]); g.setAttribute('aria-valuetext', m[2] + ' dots');
+      t.textContent = m[2]; t.setAttribute('x', left ? -21 : 21); t.setAttribute('text-anchor', left ? 'end' : 'start');
+    });
+    E.svg.setAttribute('class', set ? 'set' : '');
+    E.svg.setAttribute('aria-label', `Herds of ${M[0][2]}, ${M[1][2]} and ${M[2][2]} dots. Spread ${num(spr)} after ${S.steps} steps${set ? ', settled' : ''}.`);
+    // reads
+    $('r-spr').textContent = num(spr);
+    $('r-st').innerHTML = S.steps + (set && S.steps ? '<svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8.5" fill="var(--good)"/><path d="M5.5 9.2l2.4 2.4l4.6-5" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '');
+    $('c-st').textContent = set && S.steps ? 'steps to settle' : 'steps so far';
+    $('s-st').innerHTML = '<i class="k"></i>'.repeat(S.steps);
+    $('step').setAttribute('aria-disabled', set);
+    bars();
+    const lo = S.lo[S.lay + 'uneven'], hi = S.hi[S.lay + 'uneven'], mis = set && S.steps && S.ds === 'long' ? wrong() : 0;
+    check([set && S.steps > 0, hi >= 1.15 * lo, mis >= N / 4], [
+      `Settled in ${S.steps} step${S.steps > 1 ? 's' : ''}. Spread only ever fell: ${num(S.H[0])} to ${num(spr)}.`,
+      `Same dots, worse ending: ${hi} vs ${lo}. Starts matter.`,
+      `Cut by distance, not by shape: ${mis} of ${N} dots in the wrong herd.`]);
+  }
+
+  // spread after every step, with a dashed line at the best ending seen on these dots
+  function bars() {
+    const el = $('bars'), w = el.clientWidth || 200, n = S.H.length, best = S.lo[S.lay + S.ds], top = Math.max(S.H[0], best || 0), slot = Math.min(18, (w - 62) / n), y = v => f(52 - 38 * v / top);
+    el.setAttribute('viewBox', `0 0 ${w} 54`);
+    el.innerHTML = S.H.map((v, i) => `<rect x="${f(i * slot)}" y="${y(v)}" width="${f(Math.max(1.5, slot - 3))}" height="${f(52 - y(v))}" rx="1.5" fill="var(${i === n - 1 ? '--ink' : '--ghost'})"/>`).join('') +
+      (best ? `<path d="M0 ${y(best)}H${w}" stroke="var(--ghost)" stroke-dasharray="4 3"/><text x="${w}" y="${y(best) - 4}" text-anchor="end">best ${num(best)}</text>` : '');
+  }
+
+  // one full round: glide every centre to the middle of its dots, then let the dots pick again
+  function step() {
+    if (finish) finish();
+    if (settled()) return;
+    const M = means(), C0 = S.C, t0 = performance.now();
+    let live = true;
+    finish = () => {
+      live = false; finish = null;
+      S.C = M.map(m => [m[0], m[1]]); S.L = near(); S.steps++; S.H.push(spread());
+      if (settled()) { const v = Math.round(spread()), k = S.lay + S.ds; S.lo[k] = Math.min(S.lo[k] || v, v); S.hi[k] = Math.max(S.hi[k] || v, v); }
+      update();
+    };
+    if (reduced()) return finish();
+    const tick = t => {
+      if (!live) return;
+      const k = clamp((t - t0) / 400, 0, 1), e = k * k * (3 - 2 * k);
+      if (k >= 1) return finish();
+      S.C = C0.map((q, j) => [q[0] + (M[j][0] - q[0]) * e, q[1] + (M[j][1] - q[1]) * e]);
+      update(); requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  // moving a centre by hand is a new start
+  function place(j, x, y) {
+    const Wd = WORLD[S.lay], pad = 18 / G.sc;
+    S.C[j] = [clamp(x, pad, Wd.w - pad), clamp(y, pad, Wd.h - pad)];
+    fresh(); update();
+  }
+
+  drag(stage, ({ x, y, type, h }) => {
+    if (h == null) return;
+    const wx = (x - G.ox) / G.sc, wy = (y - G.oy) / G.sc;
+    if (type === 'down') { if (finish) finish(); off = [S.C[h][0] - wx, S.C[h][1] - wy]; }
+    if (type === 'move') place(+h, wx + off[0], wy + off[1]);
+  });
+  stage.addEventListener('keydown', e => {
+    const t = e.target.closest('[data-h]'), d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!t || !d) return;
+    e.preventDefault(); if (finish) finish();
+    const j = +t.getAttribute('data-h'), s = (e.shiftKey ? 40 : 10) / G.sc;
+    place(j, S.C[j][0] + d[0] * s, S.C[j][1] + d[1] * s);
+  });
+  $('step').addEventListener('click', step);
+  $('mix').addEventListener('click', () => { if (finish) finish(); deal(++S.shuf, S.shuf % 3 === 0); update(); });
+  KEYS.forEach(key => $('p-' + key).addEventListener('click', () => { if (finish) finish(); load(key); build(); }));
+  onResize(build);
+  build();
+})();
+</script>
+</body>
+</html>

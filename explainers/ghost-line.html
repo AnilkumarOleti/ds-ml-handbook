@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Ghost Line</title>
+<meta name="description" content="How do you know what a launch really did? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<meta property="og:title" content="The Ghost Line">
+<meta property="og:description" content="How do you know what a launch really did? A picture story and a hands-on toy from the DS/ML Learning Handbook.">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: one big picture you can grab. Title above, the stage fills the width, readouts and knobs sit under it, missions last. */
+:root{color-scheme:light;--page:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--line:rgba(11,11,11,.12);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ghost:#b4b2a9;--wash:rgba(42,120,214,.09);--good:#006300;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--line:rgba(255,255,255,.14);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ghost:#5f5e59;--wash:rgba(57,135,229,.15);--good:#0ca30c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:18px}
+.eyebrow{font:500 11.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.hd{display:grid;gap:4px}
+.hd h1{font-size:clamp(28px,6vw,40px);line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hd .sub{margin:0;color:var(--ink2);font-size:16px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stage:focus-visible,input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.stage .num{fill:var(--ink);font-weight:600}
+.stage .word{fill:var(--ink2)}
+.stage .cap{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.reads{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.read{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-content:start;min-width:0}
+.read .big{font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.read .cap{font-size:13px;color:var(--ink2)}
+.read .cap b{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:10px}
+.strip i{width:9px;height:9px;border-radius:50%;background:var(--c);border:1.75px solid var(--c)}
+.strip i.o{--c:var(--s2)}
+.strip i.b{--c:var(--s1)}
+.strip i.h{background:none}
+.minis{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.minis figure{margin:0;display:grid;gap:4px}
+.minis svg{display:block;width:100%;height:auto}
+.minis figcaption{font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.knobs{display:grid;gap:14px 24px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;font-size:14px;color:var(--ink2)}
+.knob output{font:500 13px var(--mono);color:var(--ink)}
+.knob input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--s1)}
+.missions{display:grid;gap:10px}
+.missions ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.missions li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:7px 12px 7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.missions li svg{width:18px;height:18px;flex:none}
+.missions li .ring{fill:none;stroke:var(--ghost);stroke-width:1.75}
+.missions li .tick{fill:none;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.missions li.done{background:var(--wash);border-color:transparent}
+.missions li.done .ring{fill:var(--good);stroke:var(--good)}
+.missions li.done .tick{stroke:var(--surface)}
+.aha{margin:0;min-height:22px;font-size:15px;font-weight:500}
+.foot{margin:0;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.missions li.pop{animation:pop .5s ease-out}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink2)}
+.btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.btn.go,.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.stage.still{cursor:default}
+.grab{cursor:grab;touch-action:none}
+.read .big small{font-size:17px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.missions li{position:relative}
+.bit{position:absolute;left:18px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;pointer-events:none}
+.stage .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.grab:focus{outline:none}
+.grab .ring{fill:none;stroke:none;stroke-width:2}
+.stage.kb .grab:focus .ring{stroke:var(--s1)}
+.stage.drag,.stage.drag .grab{cursor:grabbing}
+.mini{display:block;width:100%;max-width:300px;height:auto;margin-top:4px}
+/* Picture story above the toy: one big panel per idea, one short line each. Panels are visible at rest; they only replay a soft entrance when scrolled to. */
+.story{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:30px}
+.scene{display:grid;gap:10px}
+.say{margin:0;display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.say span{flex:none;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transform:translateY(-3px)}
+.scene svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scene text{font-family:var(--sans);fill:var(--ink2)}
+.scene .k{fill:var(--ink);font-weight:600}
+.turn{display:grid;gap:4px;margin-top:16px;padding-top:24px;border-top:1px solid var(--line)}
+.turn .sub{margin:0;font-size:clamp(20px,3.4vw,27px);line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){.scene.in{animation:rise .5s ease-out backwards}
+.scene.in .a{animation:fade .45s ease-out backwards;animation-delay:calc(.25s + var(--i,0)*.16s)}}
+</style>
+<div class="wrap">
+<header class="hd"><p class="eyebrow">A5 · Causal inference</p><h1>The Ghost Line</h1><p class="sub">How do you know what a launch really did?</p></header>
+<ol class="story" id="story"></ol>
+<div class="turn"><p class="eyebrow">Your turn</p><p class="sub">Drag a handle. Watch the gap.</p></div>
+<div class="stage still" id="stage"></div>
+<div class="reads">
+<div class="read"><div class="big" id="r-true"></div><div class="cap">true lift</div><svg class="mini" id="m-true" viewBox="0 0 240 28" aria-hidden="true"></svg></div>
+<div class="read"><div class="big" id="r-did"></div><div class="cap">ghost line says<b>diff-in-diff</b></div><svg class="mini" id="m-did" viewBox="0 0 240 28" aria-hidden="true"></svg></div>
+<div class="read"><div class="big" id="r-naive"></div><div class="cap">before vs after says</div><svg class="mini" id="m-naive" viewBox="0 0 240 28" aria-hidden="true"></svg></div>
+</div>
+<div class="btns"><button class="btn" id="reset" type="button">Reset</button></div>
+<div class="missions"><p class="eyebrow">Try this</p><ul id="missions"></ul><p class="aha" id="aha" aria-live="polite"></p></div>
+<p class="foot">A dot is one week. The words and formulas are in topic note A5.</p>
+<p class="foot">Full page in the <a href="../" style="color:inherit">DS/ML Learning Handbook</a>: <a href="../#a5-diff-in-diff" style="color:inherit">Difference-in-differences and synthetic control</a></p>
+</div>
+<script>
+// Drawing helpers for the picture story. Every panel is drawn in a 600 x 320 box.
+const P = (() => {
+  const v = n => `var(--${n})`;
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  const dot = (x, y, r, c, on = 1) => `<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${on ? r : r - 1}" fill="${on ? v(c) : v('surface')}" stroke="${v(c)}" stroke-width="${on ? 0 : 2}"/>`;
+  const grid = (n, cols, x, y, gap, r, fn) => { let s = ''; for (let i = 0; i < n; i++) { const [c, on] = fn(i); s += dot(x + i % cols * gap, y + Math.floor(i / cols) * gap, r, c, on); } return s; };
+  const curve = (f, x0, x1, step = 4) => { let d = ''; for (let x = x0; x <= x1 + 0.01; x += step) d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + f(x).toFixed(1); return d; };
+  const bell = (mu, sd, base, h) => x => base - h * Math.exp(-((x - mu) ** 2) / (2 * sd * sd));
+  const t = (x, y, s, size = 20, anchor = 'start', k = 0) => `<text x="${x}" y="${y}" text-anchor="${anchor}"${k ? ' class="k"' : ''} style="font-size:${size}px">${s}</text>`;
+  const ln = (x1, y1, x2, y2, c = 'ink', w = 2, dash = '') => `<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${v(c)}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
+  const pth = (d, c = 'ink', w = 2, fill = '', dash = '', op = 1) => `<path d="${d}" fill="${fill ? v(fill) : 'none'}" fill-opacity="${op}" stroke="${c ? v(c) : 'none'}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  const g = (i, s) => `<g class="a" style="--i:${i}">${s}</g>`;
+  return { v, rng, randn, dot, grid, curve, bell, t, ln, pth, g };
+})();
+function STORY(scenes) {
+  const ol = document.getElementById('story');
+  if (!ol) return;
+  ol.innerHTML = scenes.map(([say, svg], i) => `<li class="scene"><p class="say"><span>${i + 1}</span>${say}</p><svg viewBox="0 0 600 320" role="img" aria-label="${say}">${svg}</svg></li>`).join('');
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+  [...ol.children].forEach(li => io.observe(li));
+}
+// hook: How do you know what a launch really did?
+(() => {
+  const { dot, t, ln, pth, v, g } = P;
+  const X = i => 60 + i * 43.6, Y = val => 290 - (val - 60) * 2.6, d = (f, a, b) => { let s = ''; for (let i = a; i <= b; i++) s += (s ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(f(i)).toFixed(1); return s; };
+  const mark = `<rect x="${X(5.5)}" y="0" width="${600 - X(5.5)}" height="320" fill="${v('wash')}"/>` + ln(X(5.5), 14, X(5.5), 306, 'ink2', 2) + t(X(5.5) + 10, 34, 'launch', 18, 'start', 1);
+  const blue = i => 70 + 2 * i, base = i => 100 + 2 * i, act = i => base(i) + (i > 5 ? 22 : 0);
+  const line = (f, c, a = 0, b = 11) => pth(d(f, a, b), c, 3), ghost = (f, a = 5, b = 11) => pth(d(f, a, b), 's2', 3, '', '3 7');
+  // a launch city that was already climbing faster than the comparison city
+  const fast = i => 85 + 5 * i, fastAct = i => fast(i) + (i > 5 ? 22 : 0), borrow = i => fast(5) + 2 * (i - 5);
+  STORY([
+    ['Sales rose after the launch. Was it the launch?', mark + line(act, 's2') + t(X(11), Y(act(11)) - 16, 'our city', 18, 'end', 1)],
+    ['A city with no launch rose too.', mark + line(act, 's2') + g(1, line(blue, 's1') + t(X(11), Y(blue(11)) + 28, 'other city', 18, 'end', 1))],
+    ['Borrow its rise to draw the ghost line: no launch.', mark + line(act, 's2') + line(blue, 's1') + g(1, ghost(base) + t(X(11), Y(base(11)) + 26, 'ghost', 18, 'end', 1))],
+    ['The gap above the ghost is what the launch did.', mark + `<path d="${d(act, 6, 11)}L${X(11)} ${Y(base(11))}L${X(6)} ${Y(base(6))}Z" fill="${v('s2')}" fill-opacity=".2"/>` + line(act, 's2') + line(blue, 's1') + ghost(base) + g(1, ln(X(8.5), Y(act(8.5)) + 5, X(8.5), Y(base(8.5)) - 5, 'ink', 3) + t(X(8.5) + 12, Y(base(8.5) + 11) + 9, '+22', 28, 'start', 1))],
+    ['It fails if the two were not moving alike.', mark + line(fastAct, 's2') + line(blue, 's1') + ghost(borrow) + pth(d(fast, 5, 11), 'ink', 2, '', '2 5') + g(1, t(X(11), Y(borrow(11)) + 26, 'ghost', 18, 'end', 1) + t(X(9.4), Y(fast(9.4)) - 12, 'truth', 18, 'end', 1))]
+  ]);
+})();
+const KIT = (() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // seeded uniform generator in [0, 1)
+  const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const randn = r => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
+  function normCdf(z) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+    const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+    return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+  }
+  function normInv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 0.97575) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const pct = (v, d = 0) => isFinite(v) ? (v * 100).toFixed(d) + '%' : '–';
+  const num = v => isFinite(v) ? Math.round(v).toLocaleString('en-US') : '–';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // stage width in CSS px, used as the SVG viewBox width so text never scales down
+  const width = el => clamp(Math.round(el.clientWidth || 800), 320, 888);
+  // Pointer drag on a stage. cb({x, y, type, h}) with x, y in SVG viewBox units,
+  // type 'down' | 'move' | 'up', and h = data-h of the element the gesture started on (or null).
+  function drag(el, cb) {
+    let on = false, h = null;
+    const pos = e => {
+      const svg = el.querySelector('svg'), b = (svg || el).getBoundingClientRect(), vb = svg && svg.viewBox.baseVal;
+      const w = vb && vb.width ? vb.width : b.width, ht = vb && vb.height ? vb.height : b.height;
+      return { x: (e.clientX - b.left) * w / b.width, y: (e.clientY - b.top) * ht / b.height };
+    };
+    // a finger that lands on a handle moves the handle; without this some browsers scroll the page instead
+    el.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('.grab')) e.preventDefault(); }, { passive: false });
+    el.addEventListener('pointerdown', e => {
+      if (e.button) return;
+      const t = e.target.closest && e.target.closest('[data-h]');
+      on = true; h = t ? t.getAttribute('data-h') : null;
+      try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ }
+      cb({ ...pos(e), type: 'down', h });
+    });
+    el.addEventListener('pointermove', e => { if (on) cb({ ...pos(e), type: 'move', h }); });
+    ['pointerup', 'pointercancel'].forEach(n => el.addEventListener(n, e => { if (on) { on = false; cb({ ...pos(e), type: 'up', h }); } }));
+  }
+  // Mission chips. Returns check(ok[], say[]): ticks a goal the first time ok[i] is true and shows say[i].
+  function missions(goals) {
+    const ul = $('missions'), done = goals.map(() => false);
+    ul.innerHTML = goals.map(g => `<li><svg viewBox="0 0 18 18" aria-hidden="true"><circle class="ring" cx="9" cy="9" r="7.5"/><path class="tick" d="M5.5 9.2l2.4 2.4l4.6-5"/></svg>${g}</li>`).join('');
+    const check = (ok, say) => ok.forEach((v, i) => {
+      if (!v || done[i]) return;
+      done[i] = true; $('aha').textContent = say[i];
+      const li = ul.children[i]; li.classList.add('done', 'pop');
+      if (reduced() || !li.animate) return;
+      for (let k = 0; k < 12; k++) {
+        const s = document.createElement('span'), a = Math.PI * 2 * k / 12 + 0.3, d = 26 + (k % 3) * 12;
+        s.className = 'bit'; s.style.background = `var(--s${k % 3 + 1})`; li.appendChild(s);
+        s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => s.remove();
+      }
+    });
+    check.done = done;
+    return check;
+  }
+  // re-render when the viewport width changes (not on mobile URL-bar height changes)
+  function onResize(fn) { let w = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== w) { w = window.innerWidth; fn(); } }); }
+  // wire a range input: fn(value) on every input event; returns the element
+  function knob(id, fn) { const e = $(id); e.addEventListener('input', () => fn(+e.value)); return e; }
+  return { $, clamp, rng, randn, normCdf, normInv, pct, num, reduced, width, drag, missions, onResize, knob };
+})();
+(() => {
+  const { $, clamp, rng, randn, width, drag, missions, onResize } = KIT;
+  const stage = $('stage'), C1 = 100, A = 120, Y0 = 44, Y1 = 196;
+  const LIM = { lift: [0, 30], mk: [-24, 18], tilt: [-12, 12] }, DEF = { lift: 20, mk: 0, tilt: 0 }, S = { ...DEF };
+  // market wiggle shared by both groups, centred inside each window so the window means stay whole numbers
+  const wig = (() => {
+    const r = rng(21), a = [];
+    for (let i = 0; i < 12; i++) a.push(clamp(randn(r) * 1.6, -3, 3));
+    for (let k = 0; k < 12; k += 6) { const m = a.slice(k, k + 6).reduce((s, v) => s + v, 0) / 6; for (let i = k; i < k + 6; i++) a[i] -= m; }
+    return a;
+  })();
+  const check = missions(['Add market growth', 'Hide a real lift', 'Fool the ghost line']);
+  const sgn = v => { const r = Math.round(v); return (r < 0 ? '−' : '') + Math.abs(r); };
+  const G = {};
+  let foc = null, busy = false, off = 0, last = -1;
+
+  function model() {
+    const g = S.mk / 6, x = S.tilt / 6, cmp = [], base = [], act = [];
+    for (let t = 1; t <= 12; t++) {
+      const w = wig[t - 1];
+      cmp.push(C1 + g * (t - 1) + w);                 // comparison group
+      base.push(A + g * (t - 1) + x * (t - 7) + w);   // launch group with no launch (the truth)
+      act.push(base[t - 1] + (t > 6 ? S.lift : 0));   // launch group as observed
+    }
+    const mean = (a, k) => a.slice(k, k + 6).reduce((s, v) => s + v, 0) / 6;
+    const cPre = mean(cmp, 0), tPre = mean(act, 0), naive = mean(act, 6) - tPre, did = naive - (mean(cmp, 6) - cPre);
+    return { cmp, base, act, gho: cmp.map(v => tPre + v - cPre), naive: Math.round(naive), did: Math.round(did) };
+  }
+
+  function mini(id, parts) {
+    const sx = v => (clamp(v, -30, 60) + 30) * 240 / 90;
+    let tot = 0, s = `<path d="M${sx(0)} 0V28" stroke="var(--ghost)"/>`;
+    parts.forEach(([d, row]) => {
+      const a = sx(tot), b = sx(tot += d), x = Math.min(a, b), w = Math.abs(b - a);
+      if (w) s += row === 2 ? `<rect x="${x + 0.75}" y="19.75" width="${Math.max(w - 1.5, 0.5)}" height="4.5" fill="none" stroke="var(--s2)" stroke-width="1.5"/>` : `<rect x="${x}" y="${3 + row * 8}" width="${w}" height="6" fill="var(--s${row ? 1 : 2})"/>`;
+    });
+    $(id).innerHTML = s + `<path d="M${sx(tot)} 0V28" stroke="var(--ink)" stroke-width="2"/>`;
+  }
+
+  function render() {
+    const W = width(stage), big = W >= 640;
+    const H = big ? 470 : 420, L = big ? 56 : 40, R = big ? 128 : 104, T = big ? 40 : 34, B = big ? 36 : 32, r = big ? 4 : 3, fs = big ? 34 : 26, hr = big ? 13 : 11, lx = big ? 20 : 17;
+    const X = t => L + (t - 1) / 11 * (W - L - R), Y = v => T + (Y1 - v) / (Y1 - Y0) * (H - T - B);
+    const m = model(), { cmp, base, act, gho } = m, f1 = v => v.toFixed(1);
+    const at = (a, t) => { const i = Math.floor(t) - 1, f = t - i - 1; return f ? a[i] * (1 - f) + a[i + 1] * f : a[i]; };
+    const pts = (a, from, to) => { let s = ''; for (let t = from; t <= to; t++) s += (s ? 'L' : 'M') + f1(X(t)) + ' ' + f1(Y(a[t - 1])); return s; };
+    const dots = (a, from, attr) => { let s = ''; for (let t = from; t <= 12; t++) s += `<circle cx="${f1(X(t))}" cy="${f1(Y(a[t - 1]))}" r="${r}" ${attr}/>`; return s; };
+    const xl = X(6.5), xb = X(9.5), ya = Y(at(act, 9.5)), yg = Y(at(gho, 9.5)), yb = Y(cmp[11]), yt = Y(act[0]), x12 = X(12);
+    Object.assign(G, { hy: { lift: ya, mk: yb, tilt: yt }, inv: py => Y1 - (py - T) / (H - T - B) * (Y1 - Y0), b95: at(base, 9.5) });
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="True lift ${sgn(S.lift)}. Ghost line says ${sgn(m.did)}. Before versus after says ${sgn(m.naive)}."><rect x="${f1(xl)}" y="0" width="${f1(W - xl)}" height="${H}" fill="var(--wash)"/>`;
+    [60, 100, 140, 180].forEach(v => { s += `<path d="M${L - 12} ${f1(Y(v))}H${f1(x12 + 6)}" stroke="var(--grid)"/><text x="${L - 16}" y="${f1(Y(v) + 4)}" text-anchor="end" style="font-size:11px">${v}</text>`; });
+    for (let t = 1; t <= 12; t++) s += `<text x="${f1(X(t))}" y="${H - B + 21}" text-anchor="middle" style="font-size:11px">${t}</text>`;
+    s += `<text x="${L - 16}" y="${H - B + 21}" text-anchor="end" style="font-size:11px">week</text>`;
+    s += `<path d="M${f1(xl)} 0V${H}" stroke="var(--ink2)"/><text class="cap" x="${f1(xl + 10)}" y="22">launch</text>`;
+    // the gap between the borrowed ghost and the true no-launch path, only when the groups are not parallel
+    if (S.tilt) {
+      let p = `M${f1(xl)} ${f1(Y(at(gho, 6.5)))}`, q = '';
+      for (let t = 7; t <= 12; t++) { p += `L${f1(X(t))} ${f1(Y(gho[t - 1]))}`; q = `L${f1(X(t))} ${f1(Y(base[t - 1]))}` + q; }
+      s += `<path d="${p + q}L${f1(xl)} ${f1(Y(at(base, 6.5)))}Z" fill="var(--s2)" fill-opacity=".14"/>`;
+    }
+    s += `<path d="${pts(gho, 1, 12)}" fill="none" stroke="var(--s2)" stroke-width="2" stroke-dasharray="6 5"/>`;
+    if (S.tilt) s += `<path d="${pts(base, 6, 12)}" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-dasharray="1 5" stroke-linecap="round"/>`;
+    s += `<path d="${pts(cmp, 1, 12)}" fill="none" stroke="var(--s1)" stroke-width="2"/>` + dots(cmp, 1, 'fill="var(--s1)"');
+    s += `<path d="${pts(act, 1, 12)}" fill="none" stroke="var(--s2)" stroke-width="2" stroke-linejoin="round"/>` + dots(gho, 7, 'fill="var(--surface)" stroke="var(--s2)" stroke-width="1.75"') + dots(act, 1, 'fill="var(--s2)"');
+    // the gap, as a bracket with a big number
+    s += `<path d="M${f1(xb)} ${f1(ya)}V${f1(yg)}M${f1(xb - 6)} ${f1(yg)}h12" fill="none" stroke="var(--ink)" stroke-width="2"/><text class="num halo" x="${f1(xb + hr + 7)}" y="${f1((ya + yg) / 2 + fs * 0.36)}" style="font-size:${fs}px">${sgn(m.did)}</text>`;
+    // direct labels at the line ends, pushed apart so they never sit on each other
+    const labs = [[Y(act[11]), 'launch group'], [Y(gho[11]), 'without launch']].concat(S.tilt ? [[Y(base[11]), 'true path']] : [], [[yb, 'comparison']]);
+    labs.forEach((l, i) => { l[0] += i * 0.01; });
+    labs.sort((a, b) => a[0] - b[0]);
+    labs.forEach((l, i) => { if (i && l[0] < labs[i - 1][0] + 15) l[0] = labs[i - 1][0] + 15; s += `<text class="word halo" x="${f1(x12 + lx)}" y="${f1(l[0] + 4)}">${l[1]}</text>`; });
+    const up = ya <= yg + 0.01;
+    const hnd = (h, x, y, name, lab, ly) => `<text class="cap halo" x="${f1(x)}" y="${f1(y + ly)}" text-anchor="middle">${lab}</text><g class="grab" data-h="${h}" tabindex="0" role="slider" aria-orientation="vertical" aria-label="${name}" aria-valuemin="${LIM[h][0]}" aria-valuemax="${LIM[h][1]}" aria-valuenow="${S[h]}" transform="translate(${f1(x)} ${f1(y)})"><circle r="22" fill="none" pointer-events="all"/><circle class="ring" r="${hr + 5}"/><circle r="${hr}" fill="var(--ink)" stroke="var(--surface)" stroke-width="3"/><path d="M-4 -2.5l4 -4l4 4M-4 2.5l4 4l4 -4" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+    s += hnd('tilt', X(1), yt, 'Launch group own trend', 'tilt', -hr - 9) + hnd('mk', x12, yb, 'Market growth', 'market', hr + 18) + hnd('lift', xb, ya, 'True lift', 'lift', up ? -hr - 9 : hr + 18);
+    busy = true;
+    stage.innerHTML = s + '</svg>';
+    if (foc) { const el = stage.querySelector(`[data-h="${foc}"]`); if (el && document.activeElement !== el) el.focus({ preventScroll: true }); }
+    busy = false;
+
+    $('r-true').textContent = sgn(S.lift); $('r-did').textContent = sgn(m.did); $('r-naive').textContent = sgn(m.naive);
+    mini('m-true', [[S.lift, 0]]); mini('m-did', [[S.lift, 0], [S.tilt, 2]]); mini('m-naive', [[S.lift, 0], [S.mk, 1], [S.tilt, 2]]);
+    const ok = [!S.tilt && S.mk >= 6, !S.tilt && S.lift >= 5 && S.mk < 0 && m.naive <= 2, Math.abs(S.tilt) >= 5];
+    const say = [`Before vs after says ${sgn(m.naive)}. The truth is ${sgn(S.lift)}. The ghost line agrees.`, `A falling market hid a lift of ${sgn(S.lift)}. The ghost line still sees it.`, `The groups were not moving in parallel. It says ${sgn(m.did)}, truth is ${sgn(S.lift)}.`];
+    const was = check.done.slice();
+    check(ok, say);
+    check.done.forEach((d, i) => { if (d && !was[i]) last = i; });
+    if (last >= 0 && ok[last]) $('aha').textContent = say[last];
+  }
+
+  function set(h, v) { v = clamp(Math.round(v), LIM[h][0], LIM[h][1]); if (v !== S[h]) { S[h] = v; render(); } }
+  drag(stage, e => {
+    if (!e.h) return;
+    if (e.type === 'down') { foc = e.h; off = e.y - G.hy[e.h]; stage.classList.add('drag'); return; }
+    if (e.type === 'up') { stage.classList.remove('drag'); return; }
+    const v = G.inv(e.y - off);
+    set(e.h, e.h === 'lift' ? v - G.b95 : e.h === 'mk' ? (v - C1 - wig[11]) * 6 / 11 : A + wig[0] - v);
+  });
+  stage.addEventListener('keydown', e => {
+    const t = e.target.closest('[data-h]'), d = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key];
+    if (!t || !d) return;
+    e.preventDefault(); foc = t.getAttribute('data-h');
+    set(foc, S[foc] + (foc === 'tilt' ? -d : d));
+  });
+  stage.addEventListener('focusin', e => { const t = e.target.closest('[data-h]'); if (t) foc = t.getAttribute('data-h'); });
+  stage.addEventListener('focusout', () => { if (!busy) foc = null; });
+  document.addEventListener('keydown', () => stage.classList.add('kb'), true);
+  document.addEventListener('pointerdown', () => stage.classList.remove('kb'), true);
+  $('reset').addEventListener('click', () => { Object.assign(S, DEF); render(); });
+  onResize(render);
+  render();
+})();
+</script>
+</body>
+</html>
