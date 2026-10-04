@@ -30,4 +30,6 @@ Eleven topics also have a picture page: a five-picture story for a first look, t
 - `explainers/` holds the eleven picture pages, one file each.
 - `tools/make_site.py` rebuilds those files from the handbook's published pages. Run it with the folder of saved pages as its one argument. It gives each page a normal document head, points the handbook's picture-page links at `explainers/`, and adds a link from each picture page back to its concept page.
 
+The site is served from the `gh-pages` branch, which is kept identical to `main`. An update is pushed to both: `git push origin main main:gh-pages`.
+
 The page sources and the handbook builder are kept outside this repository. This repository holds the built pages only, so edits made directly to `index.html` are overwritten at the next update.
