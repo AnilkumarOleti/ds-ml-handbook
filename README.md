@@ -2,7 +2,7 @@
 
 **Read it here: https://anilkumaroleti.github.io/ds-ml-handbook/**
 
-59 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases and data engineering. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
+72 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases, data engineering and leading an analytics team. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
 
 Nothing to install and nothing to download. The link opens in any browser, on a phone or a laptop.
 
@@ -28,7 +28,7 @@ Eleven topics also have a picture page: a five-picture story for a first look, t
 
 - `index.html` is the whole handbook in one file.
 - `explainers/` holds the eleven picture pages, one file each.
-- `tools/make_site.py` rebuilds those files from the handbook's published pages. Run it with the folder of saved pages as its one argument. It gives each page a normal document head, points the handbook's picture-page links at `explainers/`, and adds a link from each picture page back to its concept page.
+- `tools/make_site.py` rebuilds those files from the handbook's published pages. Run it with the folder of saved pages as its argument. Add `--reuse-explainers` when only the handbook has changed, and the picture pages already in `explainers/` are kept as they are. It gives each page a normal document head, points the handbook's picture-page links at `explainers/`, and adds a link from each picture page back to its concept page.
 
 The site is served from the `gh-pages` branch, which is kept identical to `main`. An update is pushed to both: `git push origin main main:gh-pages`.
 

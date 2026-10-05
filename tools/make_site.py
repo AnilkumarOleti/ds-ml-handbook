@@ -12,7 +12,10 @@ What it changes, and nothing else:
     hosted copies;
   - adds one line at the foot of each picture page linking back to its handbook page.
 
-usage: python3 tools/make_site.py <input-folder>
+usage: python3 tools/make_site.py <input-folder> [--reuse-explainers]
+
+With --reuse-explainers, a picture page that was not supplied is accepted if explainers/<slug>.html is
+already in the repository, and that file is left as it is. Use it when only the handbook has changed.
 """
 import glob
 import html
@@ -57,9 +60,11 @@ def page(title, desc, base, fonts, body):
 
 
 def main():
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if a != "--reuse-explainers"]
+    reuse = "--reuse-explainers" in sys.argv[1:]
+    if len(args) != 1:
         raise SystemExit(__doc__)
-    files = sorted(glob.glob(os.path.join(sys.argv[1], "*", "index.html")))
+    files = sorted(glob.glob(os.path.join(args[0], "*", "index.html")))
     parts = {}
     for f in files:
         base, title, fonts, body = split(f)
@@ -76,6 +81,10 @@ def main():
             owners.setdefault(p["ex"][0], []).append(p)
 
     missing = sorted(set(owners) - set(parts))
+    kept = []
+    if reuse:
+        kept = [n for n in missing if os.path.exists(os.path.join(ROOT, "explainers", slug(n) + ".html"))]
+        missing = [n for n in missing if n not in kept]
     unused = sorted(set(parts) - set(owners))
     if missing:
         raise SystemExit(f"handbook links to picture pages that were not supplied: {missing}")
@@ -91,7 +100,7 @@ def main():
     if left:
         raise SystemExit(f"private links still in the handbook: {sorted(set(left))}")
     desc = (f"{len(data['pages'])} concept pages on statistics, experimentation, causal inference, machine learning, "
-            "SQL, product cases and data engineering. Each starts with a problem, hides every answer until you ask, "
+            "SQL, product cases, data engineering and leading an analytics team. Each starts with a problem, hides every answer until you ask, "
             "and ends with an interview ladder.")
     open(os.path.join(ROOT, "index.html"), "w", encoding="utf8").write(page(HANDBOOK, desc, base, fonts, hb))
 
@@ -118,6 +127,8 @@ def main():
     print(f"handbook: {len(data['pages'])} pages, {swapped} private links swapped")
     for name, out, ps in made:
         print(f"  {out}  <-  {name}  ({', '.join(ps) or 'not linked from the handbook'})")
+    for name in kept:
+        print(f"  explainers/{slug(name)}.html  kept as it is  ({name})")
     if unused:
         print("WARN picture pages not linked from the handbook:", unused)
 
