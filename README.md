@@ -2,7 +2,7 @@
 
 **Read it here: https://anilkumaroleti.github.io/ds-ml-handbook/**
 
-72 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases, data engineering and leading an analytics team. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
+77 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases, data engineering and leading an analytics team. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
 
 Nothing to install and nothing to download. The link opens in any browser, on a phone or a laptop.
 
