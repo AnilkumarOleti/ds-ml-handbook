@@ -10,7 +10,8 @@ What it changes, and nothing else:
   - gives each page a normal document head (language, charset, title, description);
   - points the handbook's picture-page links at explainers/<slug>.html in place of the private
     hosted copies;
-  - adds one line at the foot of each picture page linking back to its handbook page.
+  - adds one line at the foot of each picture page linking back to its handbook page;
+  - then runs tools/enhance.py, which adds the pages, labs and study features kept in extra/.
 
 usage: python3 tools/make_site.py <input-folder> [--reuse-explainers]
 
@@ -131,6 +132,11 @@ def main():
         print(f"  explainers/{slug(name)}.html  kept as it is  ({name})")
     if unused:
         print("WARN picture pages not linked from the handbook:", unused)
+
+    # 3. the in-repository layer: extra pages, cross-reference links, extra labs and the study features
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import enhance
+    enhance.main()
 
 
 if __name__ == "__main__":
