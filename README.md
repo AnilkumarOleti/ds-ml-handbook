@@ -2,7 +2,7 @@
 
 **Read it here: https://anilkumaroleti.github.io/ds-ml-handbook/**
 
-83 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases, data engineering, communication and leading an analytics team. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
+102 concept pages on statistics, experimentation, causal inference, machine learning, SQL, product cases, behavioural and growth analytics, opportunity sizing, data engineering, communication and leading an analytics team. Every page starts with a problem to attempt, hides every answer until you ask for it, and ends with a five-rung interview ladder. The handbook also has a mixed self-test across topics and an index of every interview question, filterable by role.
 
 Nothing to install and nothing to download. The link opens in any browser, on a phone or a laptop.
 
@@ -12,9 +12,9 @@ Everything below is kept in your browser only; nothing is sent anywhere.
 
 - **Your status.** Mark each page *shaky* or *solid* at the top of the page. The home page shows progress by part and a dot beside every topic.
 - **Saved answers.** Every answer box keeps what you type, so attempts, one-liners and open questions survive a reload.
-- **Review** (`#review`). Spaced review of the 822 self-test questions. Questions you get right come back after 1, 3, 7, 14, 30, then 60 days; questions you miss come back tomorrow. New questions are drawn from pages you have opened.
+- **Review** (`#review`). Spaced review of the 1,012 self-test questions. Questions you get right come back after 1, 3, 7, 14, 30, then 60 days; questions you miss come back tomorrow. New questions are drawn from pages you have opened.
 - **Mock interview** (`#mock`). One ladder question at a time against a 3, 5 or 8-minute clock, filtered by role and rung. Open the follow-ups and the weak and strong answers, then grade yourself; weak grades mark the page shaky.
-- **Plans** (`#plans`). Eight-week Lead, IC and MLE tracks, about five pages a week, with progress per week.
+- **Plans** (`#plans`). Ten-week Lead, IC and MLE tracks, about five pages a week, with progress per week.
 - **Notes** (`#notes`). Every open question and one-liner you have written, by topic, with a copy-all button.
 - **Print with answers.** A button on every page prints it with all answers open and the interactive parts left out.
 
@@ -42,7 +42,8 @@ Eleven topics also have a picture page: a five-picture story for a first look, t
 - `explainers/` holds the eleven picture pages, one file each.
 - `tools/make_site.py` rebuilds those files from the handbook's published pages. Run it with the folder of saved pages as its argument. Add `--reuse-explainers` when only the handbook has changed, and the picture pages already in `explainers/` are kept as they are. It gives each page a normal document head, points the handbook's picture-page links at `explainers/`, and adds a link from each picture page back to its concept page. It then runs `tools/enhance.py`.
 - `extra/` is the part of the handbook that lives in this repository, added on top of every build by `tools/enhance.py`:
-  - `extra/src/*.py`: six concept pages, written with `tools/pagekit.py` in the handbook's own markup. Run `python3 tools/pagekit.py` after editing one; it writes `extra/pages/`.
+  - `extra/sections.json`: sections added in this repository (C5, C6), slotted into the home page in code order.
+  - `extra/src/*.py`: the concept pages added in this repository, written with `tools/pagekit.py` in the handbook's own markup. Run `python3 tools/pagekit.py` after editing one; it writes `extra/pages/`.
   - `extra/inserts/`: additions to existing pages (the A3 design lab).
   - `extra/labs.js`: the labs for those pages. `extra/check/*.py` compute every figure the pages and labs quote.
   - `extra/study.js` and `extra/study.css`: the study features above.
@@ -59,6 +60,25 @@ Eleven topics also have a picture page: a five-picture story for a first look, t
 | Communicating results to executives | E1 Communication |
 | Building an analytics function | E2 Leading an analytics team |
 | Fairness and responsible models | E3 Responsible practice |
+| Novelty effects and long-term holdouts | A4 Advanced experimentation |
+| Covariate balance, overlap and coarsened exact matching | A5 Causal inference |
+| Interrupted time series, CausalImpact and synthetic DiD | A5 Causal inference |
+| Double/debiased machine learning | A5 Causal inference |
+| Sensitivity to hidden confounding and falsification tests | A5 Causal inference |
+| Mediation analysis | A5 Causal inference |
+| Monte Carlo simulation for sizing and scenarios | C2 Python and DS coding |
+| Power and false positive rates by simulation | C2 Python and DS coding |
+| Key driver analysis | C3 Product metrics and case questions |
+| Metric sensitivity | C3 Product metrics and case questions |
+| Anomaly detection and alerting thresholds | C3 Product metrics and case questions |
+| Path and sequence analysis | C5 Behavioural and growth analytics |
+| Behavioural segmentation and RFM | C5 Behavioural and growth analytics |
+| Text analytics on search queries and feedback | C5 Behavioural and growth analytics |
+| Activation and aha-moment analysis | C5 Behavioural and growth analytics |
+| Churn and propensity models | C5 Behavioural and growth analytics |
+| Opportunity sizing with ranges and past experiment lifts | C6 Opportunity sizing and research |
+| Price and demand elasticity | C6 Opportunity sizing and research |
+| Joining survey, PSAT and UXR findings to behavioural data | C6 Opportunity sizing and research |
 
 The site is served from the `gh-pages` branch, which is kept identical to `main`. An update is pushed to both: `git push origin main main:gh-pages`.
 

@@ -17,7 +17,9 @@ import runpy
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECS = {"B0": "Mathematics for machine learning", "C4": "Product and marketing economics",
         "D3": "ML systems in production", "E1": "Communication", "E2": "Leading an analytics team",
-        "E3": "Responsible practice", "A3": "A/B testing and experiment design"}
+        "E3": "Responsible practice", "A3": "A/B testing and experiment design", "A4": "Advanced experimentation",
+        "A5": "Causal inference", "C2": "Python and DS coding", "C3": "Product metrics and case questions",
+        "C5": "Behavioural and growth analytics", "C6": "Opportunity sizing and research"}
 NAMES = {1: "Try it first", 2: "Two analogies", 3: "Concept", 4: "Mechanics, faded", 5: "Assumptions and failures",
          6: "Neighbours", 7: "Applications in pairs", 8: "In practice", 9: "Contested ground",
          10: "Interview ladder", 11: "Your one-liner"}

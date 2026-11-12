@@ -87,7 +87,7 @@ def main():
         nweeks = pg.evaluate("document.querySelectorAll('.week').length")
         missing = pg.evaluate("""() => { const T=[...document.querySelectorAll('.plist a')].map(a=>a.getAttribute('href').slice(1));
             return T.filter(s=>!HB.by[s]) }""")
-        if nweeks != 8 or missing: fails.append(("plans", nweeks, missing))
+        if nweeks != 10 or missing: fails.append(("plans", nweeks, missing))
         for t in ("ic", "mle"):
             pg.click(f"[data-t={t}]")
             n = pg.evaluate("document.querySelectorAll('.plist li').length")

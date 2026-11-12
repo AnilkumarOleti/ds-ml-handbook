@@ -8,6 +8,7 @@ rebuild of the handbook from its outside sources. It can also be run by hand:
     python3 tools/enhance.py --check    # report what it would do, write nothing
 
 What it does, in order:
+  0. Adds any new sections listed in extra/sections.json, in code order within their part.
   1. Adds the extra concept pages in extra/pages/*.html. Each file starts with a one-line
      <!--meta {...}--> header (slug, code, title, lede, keywords). The page joins the handbook's
      data: its position follows the section order, and its self-tests and interview rungs are
@@ -97,6 +98,16 @@ def main():
 
     dm = re.search(r'(<script type="application/json" id="hb-data">)(.*?)(</script>)', h, re.S)
     data = json.loads(dm.group(2))
+    # 0. new sections: extra/sections.json, {"C5": "Name", ...}, slotted into code order within their part
+    sf = os.path.join(EXTRA, "sections.json")
+    if os.path.exists(sf):
+        for code, name in json.load(open(sf, encoding="utf8")).items():
+            if code in data["secs"]:
+                raise SystemExit(f"extra/sections.json: section {code} already exists")
+            if code[0] not in data["parts"]:
+                raise SystemExit(f"extra/sections.json: no part {code[0]} for section {code}")
+            data["secs"][code] = name
+        data["secs"] = {c: data["secs"][c] for c in sorted(data["secs"])}
     secs = list(data["secs"])
 
     # 1. extra pages
@@ -185,6 +196,8 @@ def main():
             raise SystemExit(f"extra/{name} must not contain </script")
     h = h.replace(start, f"\n/* ---- extra/labs.js ---- */\n{labs}\n/* ---- extra/study.js ---- */\n{study}\nHB.start();\n")
     h = h.replace("</head>", f"<style>\n{css}</style>\n{MARK}\n</head>", 1)
+    head_end = h.index("</head>")
+    h = re.sub(r"\d+ concept pages", f"{len(data['pages'])} concept pages", h[:head_end]) + h[head_end:]
 
     left = [m for m in REF.findall(re.sub(r"<script.*?</script>", "", h, flags=re.S))]
     if left:

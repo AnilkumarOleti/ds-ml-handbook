@@ -176,7 +176,9 @@
       ['Money and targeting',['c4-unit-economics','c4-incrementality','a5-uplift-hte','a6-partial-pooling']],
       ['ML a leader must judge',['b4-precision-recall','b4-calibration','b1-validation-leakage','d3-monitoring-drift','d3-feedback-loops','b7-llm-evaluation']],
       ['Running the team',['e2-building-team','e2-prioritisation-capacity','e2-stakeholders-pushback','e1-exec-communication']],
-      ['Responsibility and foundations',['e3-fairness','d1-data-quality','d1-data-modelling','d3-system-design']]]},
+      ['Responsibility and foundations',['e3-fairness','d1-data-quality','d1-data-modelling','d3-system-design']],
+      ['Measuring launches and sizing bets',['a4-long-term-effects','c3-metric-sensitivity','c6-opportunity-sizing','c6-price-elasticity','c6-qual-quant']],
+      ['Growth analytics a leader must read',['c5-activation','c5-churn-propensity','c5-segmentation-rfm','c3-key-drivers','a5-sensitivity-falsification']]]},
     ic:{name:'IC',blurb:'For senior and staff data scientist loops: probability, inference, experiments, causal inference, modelling, SQL and product cases.',weeks:[
       ['Probability',['a1-bayes-base-rates','a1-expectation-variance','a1-clt','a1-distributions','b0-likelihood-entropy']],
       ['Inference',['a2-p-values','a2-confidence-intervals','a2-multiple-testing','c2-bootstrap-simulation','a6-bayesian-updating']],
@@ -185,7 +187,9 @@
       ['Causal inference',['a5-confounding-dags','a5-diff-in-diff','a5-matching-propensity','a5-instrumental-variables','a5-uplift-hte']],
       ['Modelling',['b1-bias-variance','b1-validation-leakage','b2-linear-regression','b2-logistic-regression','b3-gradient-boosting','b4-precision-recall']],
       ['SQL and coding',['c1-window-functions','c1-joins-nulls','c1-retention-funnels','c1-sessions-streaks','c2-pandas-patterns']],
-      ['Product cases',['c3-metric-design','c3-metric-diagnosis','c3-launch-strategy','c3-problem-framing','c4-unit-economics','c4-incrementality']]]},
+      ['Product cases',['c3-metric-design','c3-metric-diagnosis','c3-launch-strategy','c3-problem-framing','c4-unit-economics','c4-incrementality']],
+      ['Causal inference, deeper',['a5-balance-overlap','a5-its-causalimpact','a5-double-ml','a5-sensitivity-falsification','a5-mediation','a4-long-term-effects']],
+      ['Product analytics toolkit',['c2-monte-carlo','c2-power-simulation','c3-key-drivers','c3-metric-sensitivity','c3-anomaly-detection','c5-path-analysis','c5-activation','c6-opportunity-sizing']]]},
     mle:{name:'MLE',blurb:'For ML engineer and applied scientist loops: foundations, models, deep learning and LLMs, data and serving, and system design.',weeks:[
       ['Foundations',['b0-likelihood-entropy','b1-bias-variance','b1-regularisation','b1-validation-leakage','b2-linear-regression','b2-logistic-regression']],
       ['Trees and evaluation',['b3-decision-trees','b3-random-forests','b3-gradient-boosting','b3-feature-importance','b4-precision-recall','b4-roc-auc']],
@@ -194,11 +198,13 @@
       ['Deep learning and LLMs',['b6-optimisers-dropout','b6-debugging-training','b7-attention','b7-model-families-sampling','b7-rag-finetuning']],
       ['LLM systems and ranking',['b7-llm-evaluation','b7-agents-tools','b9-retrieval-ranking','b9-ranking-metrics','b9-position-bias']],
       ['Data and serving',['d2-feature-pipelines','d2-streaming','d2-distributed-processing','d3-serving-deployment','d3-monitoring-drift']],
-      ['System design',['d3-system-design','d3-feedback-loops','b8-forecasting-backtests','e3-fairness','a3-experiment-design']]]}
+      ['System design',['d3-system-design','d3-feedback-loops','b8-forecasting-backtests','e3-fairness','a3-experiment-design']],
+      ['Simulation and causal ML',['c2-power-simulation','c2-monte-carlo','a5-double-ml','a5-balance-overlap','c6-price-elasticity']],
+      ['Applied modelling on product data',['c5-churn-propensity','c5-text-analytics','c5-segmentation-rfm','c3-anomaly-detection','c3-key-drivers']]]}
   };
   HB.views.plans=function(view){
     var k=S.get('track','lead'),T=TRACKS[k]||TRACKS.lead,st=S.get('st',{});
-    var s='<header class="top"><p class="label">Eight weeks, about five pages a week</p><h1>Study plans</h1>'+
+    var s='<header class="top"><p class="label">Ten weeks, about five pages a week</p><h1>Study plans</h1>'+
       '<p class="lede">'+esc(T.blurb)+' Mark each page shaky or solid at the top of the page; a week is done when every page in it is solid.</p>'+
       '<div class="tools"><div class="seg" role="group" aria-label="Track">'+Object.keys(TRACKS).map(function(t){return '<button type="button" data-t="'+t+'" aria-pressed="'+(t===k)+'">'+TRACKS[t].name+' track</button>'}).join('')+'</div></div></header><div class="parts">';
     T.weeks.forEach(function(w,i){var ps=w[1].filter(function(x){return HB.by[x]}),done=ps.filter(function(x){return st[x]&&st[x].v==='solid'}).length;
